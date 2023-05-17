@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Get Clipboard Data</title>
+  </head>
+  <body>
+    <label for="clipboard-textarea">Paste your JSON data (will replace double quotes):</label>
+    <br />
+    <input type="text" id="clipboard-textarea"></input>
+
+    <div id="clipboard-data"></div>
+
+    <script>
+      // Listen to the paste event on the visible textarea element
+      document
+        .getElementById("clipboard-textarea")
+        .addEventListener("paste", (event) => {
+          const clipboardData = event.clipboardData;
+          const jsonData = clipboardData.getData("application/json");
+
+          // Replace all double quotes with single quotes
+          const formattedData = jsonData.replace(/"/g, "'");
+
+          // Display clipboard data in the div with id "clipboard-data"
+          document.getElementById("clipboard-data").innerHTML = formattedData;
+        });
+    </script>
+  </body>
+</html>

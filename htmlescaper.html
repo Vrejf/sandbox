@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Code Wrapper & HTML Escaper</title>
+  </head>
+  <body>
+    <h1>Code Wrapper & HTML Escaper</h1>
+    <textarea
+      id="inputCode"
+      rows="10"
+      cols="50"
+      placeholder="Paste your code here"
+    ></textarea>
+    <br />
+    <select id="codeType">
+      <option value="javascript">JavaScript</option>
+      <option value="html">HTML</option>
+    </select>
+    <button onclick="processCode()">Process Code</button>
+    <br />
+    <h2>Processed Code:</h2>
+    <textarea id="outputCode" rows="10" cols="50" readonly></textarea>
+
+    <script>
+      function processCode() {
+        const inputCode = document.getElementById("inputCode");
+        const outputCode = document.getElementById("outputCode");
+        outputCode.value = "";
+        const codeType = document.getElementById("codeType").value;
+
+        let processedCode = "";
+
+        if (codeType === "javascript") {
+          processedCode = `<pre><code class="language-javascript">${inputCode.value}</code></pre>`;
+        } else if (codeType === "html") {
+          const escapedHTML = inputCode.value
+            .replace(/&/g, "&amp;")
+            .replace(/</g, "&lt;")
+            .replace(/>/g, "&gt;")
+            .replace(/"/g, "&quot;")
+            .replace(/'/g, "&#039;");
+          processedCode = `<pre><code class="language-html">${escapedHTML}</code></pre>`;
+        }
+
+        outputCode.value = processedCode;
+      }
+    </script>
+  </body>
+</html>

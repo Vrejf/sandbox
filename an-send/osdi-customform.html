@@ -1,0 +1,65 @@
+<script
+  src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"
+  type="text/javascript"
+></script>
+
+<form id="custom-demo" action="/" method="post">
+  <label>First Name:</label>
+  <select name="first" id="first">
+    <option value="">[choose one]</option>
+    <option value="Adam">Adam</option>
+    <option value="Eve">Eve</option>
+  </select>
+  <br />
+  <label>Email Address:</label>
+  <input type="text" name="email_address" id="email" />
+  <br />
+  <label>Souce</label>
+  <input type="text" name="source" id="source" />
+  <button
+    type="submit"
+    id="custom_submit"
+    value="Submit"
+    class="btn-primary btn"
+  >
+    Submit
+  </button>
+
+  <div id="success"></div>
+</form>
+<script src="https://cdn.jsdelivr.net/npm/jquery-osdi@1.0.0/jquery.osdi.min.js"></script>
+<script type="text/javascript">
+  $(document).ready(function () {
+    $("#custom-demo").osdi({
+      endpoint:
+        "https://actionnetwork.org/api/v2/petitions/23f4a6a1-b037-442f-94aa-18601f46d559/signatures",
+      body: function () {
+        return {
+          person: {
+            given_name: $("#first").val(),
+            email_addresses: [
+              {
+                address: $("#email").val()
+              }
+            ]
+          },
+          add_tags: ["volunteer"],
+          "action_network:referrer_data": {
+            source: $("#source").val()
+          }
+        };
+      },
+      done: function (data, textStatus, jqXHR) {
+        console.log("done");
+        $("#success").html("<p><strong>It worked!</strong></p>");
+      },
+      fail: function (jqXHR, textStatus, errorThrown) {
+        console.log("fail");
+        $("#success").html("<p><strong>It failed!</strong></p>");
+      },
+      always: function (data_jqXHR, textStatus, jqXHR_errorThrown) {
+        console.log("always");
+      }
+    });
+  });
+</script>

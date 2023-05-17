@@ -1,0 +1,33 @@
+<h1>Vanilla JS fetch OSDI</h1>
+<form
+  id="custom-demo"
+  action=""
+  method="get"
+  endpoint="https://actionnetwork.org/api/v2/petitions/23f4a6a1-b037-442f-94aa-18601f46d559/signatures"
+  an="true"
+  forward="true"
+>
+  <label>First Name:</label>
+  <input type="text" id="first" name="first" />
+  <br />
+  <label>Last Name:</label>
+  <input type="text" id="last" name="last" />
+  <br />
+  <label>Email Address:</label>
+  <input type="text" name="email_address" id="email" />
+  <br>
+  <label>Phone:</label>
+  <input type="text" name="phone_number" id="phone" />
+  <br>
+  <button
+    type="submit"
+    id="custom_submit"
+    value="Submit"
+    class="btn-primary btn"
+  >
+    Submit
+  </button>
+</form>
+
+<script src="an-send.js">
+</script>

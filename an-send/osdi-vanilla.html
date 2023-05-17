@@ -1,0 +1,115 @@
+<h1>Vanilla JS fetch OSDI</h1>
+<form
+  id="custom-demo"
+  action=""
+  method="get"
+  endpoint="https://actionnetwork.org/api/v2/petitions/23f4a6a1-b037-442f-94aa-18601f46d559/signatures"
+  an="true"
+  forward="true"
+>
+  <label>First Name:</label>
+  <input type="text" id="first" name="first" />
+  <br />
+  <label>Last Name:</label>
+  <input type="text" id="last" name="last" />
+  <br />
+  <label>Email Address:</label>
+  <input type="text" name="email_address" id="email" />
+  <br>
+  <label>Phone:</label>
+  <input type="text" name="phone_number" id="phone" />
+  <br>
+  <button
+    type="submit"
+    id="custom_submit"
+    value="Submit"
+    class="btn-primary btn"
+  >
+    Submit
+  </button>
+</form>
+
+<script>
+const queryString = window.location.search;
+const urlParams = new URLSearchParams(queryString);
+const utmSource = urlParams.get('utm_source')
+
+
+
+
+  const forwardForms = document.querySelectorAll('[forward="true"]');
+
+  document.addEventListener("DOMContentLoaded", function () {
+    const anForms = document.querySelectorAll("[an='true']");
+
+    anForms.forEach(function (form) {
+      console.log("Send this to Action network :" + form.getAttribute("id"));
+      const first = form.querySelector('[name="first"]');
+      const last = form.querySelector('[name="last"]');
+      const email = form.querySelector('[name="email_address"]');
+      const phone = document.querySelector('[name="phone_number"]');
+      const postalCode = document.querySelector('[name="postal_code"]');
+      const address = document.querySelector('[name="address"]');
+      const region = document.querySelector('[name="region"]');
+      const country = document.querySelector('[name="country"]');
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+        const endpoint = form.getAttribute("endpoint");
+        const url = endpoint;
+        const headers = {
+          "Content-Type": "application/json;charset=UTF-8"
+        };
+
+        const data = {
+          person: {
+            given_name: first.value,
+            family_name: last.value,
+            email_addresses: [
+              {
+                address: email.value
+              }
+            ],
+            phone_numbers: [
+              {
+                number: phone ? phone.value : '',
+              },
+            ],
+            postal_addresses: [
+              {
+                postal_code: postalCode ? postalCode.value : '',
+                address_lines: address ? [address.value] : [''],
+                region: region ? region.value : '',
+                country: country ? country.value : '',
+              },
+            ],
+          },
+          "action_network:referrer_data": {
+            source: utmSource ? utmSource.toString() : ""
+          }
+        };
+
+        fetch(url, {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(data)
+        })
+          .then((response) => {
+            if (response.ok) {
+              console.log("done");
+              form.submit();
+            } else {
+              console.log("fail");
+            }
+            console.log("always");
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      });
+    });
+  });
+  forwardForms.forEach(function (form) {
+    console.log("Forward this form:" + form.getAttribute("id"));
+  });
+</script>
