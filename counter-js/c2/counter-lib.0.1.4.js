@@ -1,6 +1,8 @@
 // Counter module:
 function ageraCounter() {
     const apiUrl = "https://utils-api.vercel.app/api/count/"
+    const hideStyle = `display: inline-block; transition: opacity 0.5s ease-in-out; opacity: 0`;
+
 
     function calcPercent(current, target) {
         if (current >= target) { return 100; }
@@ -35,12 +37,12 @@ function ageraCounter() {
                 console.log(await response.json());
                 console.log(response.statusText)
             }
-            const data = response.json();
+            const data = await response.json();
             if (Number.isInteger(data.count)) {
-                counterNames[name] = data.count;
                 return data.count;
             } else {
                 console.log("Count not Int")
+                console.log(data)
                 return 0
             }
 
@@ -55,8 +57,8 @@ function ageraCounter() {
     }
 
     function updateLimiterWidth(element, value, target) {
-        console.log('updated Limiter percent', element.style.width);
         element.style.width = calcPercent(value, target) + '%';
+        console.log('updated Limiter percent', element.style.width);
     }
 
     function updateTargetValue(element, target) {
@@ -65,6 +67,7 @@ function ageraCounter() {
     }
 
     async function processCounterElement(element) {
+        element.style.cssText = hideStyle;
         const counterName = element.getAttribute('data-countername');
         const userTargetValue = element.getAttribute("data-countertarget") || 0;
         const currentValue = await fetchCounter(counterName);
