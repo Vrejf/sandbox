@@ -1,6 +1,5 @@
 // Counter module:
-const ageraCounter = (function () {
-
+function ageraCounter() {
     const apiUrl = "https://utils-api.vercel.app/api/count/"
 
     function calcPercent(current, target) {
@@ -91,13 +90,12 @@ const ageraCounter = (function () {
         for (let limiter of limiters) {
             updateLimiterWidth(limiter, currentValue, targetValue)
         }
-
-        return {
-            processCounterElement,
-        };
-
+    }
+    return {
+        processCounterElement,
     };
-})
+}
+
 // Usage
 document.addEventListener('DOMContentLoaded', function () {
     const counterElements = document.querySelectorAll('[data-countername]');
