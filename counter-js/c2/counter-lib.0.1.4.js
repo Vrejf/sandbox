@@ -99,7 +99,8 @@ function ageraCounter() {
 // Usage
 document.addEventListener('DOMContentLoaded', function () {
     const counterElements = document.querySelectorAll('[data-countername]');
+    const counter = ageraCounter();
     for (let element of counterElements) {
-        ageraCounter.processCounterElement(element);
+        counter.processCounterElement(element);
     }
 });
