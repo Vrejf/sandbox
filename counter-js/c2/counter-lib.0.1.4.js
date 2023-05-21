@@ -105,9 +105,9 @@ function ageraCounter() {
         console.log("countername: ", counterName)
         const options = {
             target: element.dataset.counterTarget || 0,
-            hideBelow: element.dataset.hideBelow || 50,
+            hideBelow: element.dataset.counterHideBelow || 50,
             autoTarget: element.dataset.counterAutoTarget || true,
-            local: element.dataset.counterLocal || undefined, //"sv-SE",
+            locale: element.dataset.counterLocale || undefined, //"sv-SE",
             compact: element.dataset.counterCompact || false,
             compactDisplay: {
                 notation: "compact",
