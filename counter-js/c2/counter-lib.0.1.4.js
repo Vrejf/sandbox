@@ -1,8 +1,6 @@
 // Counter module:
 function ageraCounter() {
     const apiUrl = "https://utils-api.vercel.app/api/count/"
-    const hideStyle = `display: inline-block; transition: opacity 0.5s ease-in-out; opacity: 0`;
-
 
     function calcPercent(current, target) {
         if (current >= target) { return 100; }
@@ -29,7 +27,8 @@ function ageraCounter() {
 
     async function fetchCounter(name) {
         console.log("fetching...")
-        const url = new URL(name, apiUrl)
+        //const url = new URL(name, apiUrl)
+        const url = new URL("test11", apiUrl)
 
         try {
             const response = await fetch(url);
@@ -53,6 +52,7 @@ function ageraCounter() {
 
     function updateCounterValue(element, value) {
         element.textContent = value;
+
         console.log("New counter value: ", value)
     }
 
@@ -65,13 +65,27 @@ function ageraCounter() {
         element.textContent = target
         console.log("updated target value: ", target)
     }
+    function showElement(element, current, hidebelow) {
+        if (current > hidebelow) {
+            element.style.opacity = 1;
+        }
+    }
 
     async function processCounterElement(element) {
-        element.style.cssText = hideStyle;
-        const counterName = element.getAttribute('data-countername');
-        const userTargetValue = element.getAttribute("data-countertarget") || 0;
-        const currentValue = await fetchCounter(counterName);
-        const targetValue = setTarget(currentValue, userTargetValue);
+        //const counterName = element.getAttribute('data-countername');
+        //const userTargetValue = element.getAttribute("data-countertarget") || 0;
+        //const userHideBelow = element.getAttribute("data-counter-hide-below") || 0;
+
+        const counterName = element.dataset.countername;
+        console.log("countername: ", counterName)
+        const options = {
+            target: element.dataset.counterTarget || 0,
+            hideBelow: element.dataset.hideBelow || 50,
+            autoTarget: element.dataset.counterAutoTarget || true,
+        }
+        const userTargetValue = element.dataset.counterTarget || 0;
+        const currentValue = await fetchCounter(counterName) + 1700;
+        const targetValue = setTarget(currentValue, options.autoTarget);
 
 
         // Update all the Current values:
@@ -80,12 +94,14 @@ function ageraCounter() {
         );
         for (let currentValueElement of currentValueElements) {
             updateCounterValue(currentValueElement, currentValue);
+            showElement(currentValueElement, currentValue, options.hideBelow)
         }
 
         // Update all targets:
         const targetValuesElement = element.querySelectorAll('.counter-target-value');
         for (let targetValueElement of targetValuesElement) {
             updateTargetValue(targetValueElement, targetValue)
+            showElement(targetValueElement, currentValue, options.hideBelow)
         }
 
         // Update all counterbar-limiter
@@ -93,11 +109,26 @@ function ageraCounter() {
         for (let limiter of limiters) {
             updateLimiterWidth(limiter, currentValue, targetValue)
         }
+        showElement(element, currentValue, options.hideBelow)
     }
     return {
         processCounterElement,
     };
 }
+
+
+const hideCss = `
+    .counter-target-value,
+    .counter-current-value,
+    .container_counter {
+        opacity: 0;
+        transition: opacity 1s;
+    }
+`;
+
+const styleTag = document.createElement('style');
+styleTag.textContent = hideCss;
+document.head.appendChild(styleTag);
 
 // Usage
 document.addEventListener('DOMContentLoaded', function () {
@@ -107,3 +138,6 @@ document.addEventListener('DOMContentLoaded', function () {
         counter.processCounterElement(element);
     }
 });
+
+
+
