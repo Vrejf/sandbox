@@ -67,30 +67,27 @@ function ageraCounter() {
 
     function updateCounterValue(element, value, options) {
         if (!options.compact) {
-            element.textContent = value.toLocaleString(options.local);
+            element.textContent = value.toLocaleString(options.locale);
         }
         else {
-            const compact = new Intl.NumberFormat(options.local, options.compactDisplay).format(value);
+            const compact = new Intl.NumberFormat(options.locale, options.compactDisplay).format(value);
             element.textContent = compact;
         }
-
-        console.log("New counter value: ", value)
     }
 
     function updateLimiterWidth(element, value, target) {
         element.style.width = calcPercent(value, target) + '%';
-        console.log('updated Limiter percent', element.style.width);
     }
 
     function updateTargetValue(element, target, options) {
         if (!options.compact) {
-            element.textContent = target.toLocaleString(options.local);
+            const long = new Intl.NumberFormat(options.locale).format(target);
+            element.textContent = long
         } else {
-            const compact = new Intl.NumberFormat(options.local, options.compactDisplay).format(target);
+            const compact = new Intl.NumberFormat(options.locale, options.compactDisplay).format(target);
             element.textContent = compact;
 
         }
-        console.log("updated target value: ", target)
     }
 
     function showElement(element, current, options) {
@@ -102,22 +99,18 @@ function ageraCounter() {
     async function processCounterElement(element) {
 
         const counterName = element.dataset.counterName;
-        console.log("countername: ", counterName)
         const options = {
             target: element.dataset.counterTarget || 0,
             hideBelow: element.dataset.counterHideBelow || 50,
             autoTarget: element.dataset.counterAutoTarget || true,
-            locale: element.dataset.counterLocale || undefined, //"sv-SE",
+            locale: element.dataset.counterLocale || undefined,  //"sv-SE", 
             compact: element.dataset.counterCompact || false,
             compactDisplay: {
                 notation: "compact",
-                //compactDisplay: "short"
             },
         }
         const currentValue = await fetchCounter(counterName);
         const targetValue = setTarget(currentValue, options);
-        console.log("targetValue: ", targetValue)
-
 
         // Update all the CURRENT VALUES:
         const currentValueElements = element.querySelectorAll(
