@@ -111,7 +111,7 @@ function ageraCounter() {
             compact: element.dataset.counterCompact || false,
             compactDisplay: {
                 notation: "compact",
-                compactDisplay: "short"
+                //compactDisplay: "short"
             },
         }
         const currentValue = await fetchCounter(counterName);
