@@ -7,28 +7,43 @@ function ageraCounter() {
         return Math.round((current / target) * 100);
     }
 
-    function setTarget(current, target) {
-        function roundTarget() {
-            const rounding = [250, 500, 1000, 2500];
-            let newTarget = Math.ceil((current * 1.05) / rounding[0]) * rounding[0];
-            for (let factor of rounding) {
-                if (current > factor) {
-                    newTarget = Math.ceil(newTarget / factor) * factor;
-                }
-            }
-            return newTarget;
-        };
-        if ((current * 1.05) > target) {
-            return roundTarget();
-        } else {
-            return target;
+    function roundUp(number) {
+        const breakPoints = {
+            350: 50,
+            500: 100,
+            2_000: 250,
+            5_000: 500,
+            20_000: 2_500,
+            50_000: 5_000,
+            100_000: 10_000,
+            200_000: 25_000,
+            500_000: 50_000,
+            1_000_000: 100_000,
+        }
+        const more = 250_000
+        let keys = Object.keys(breakPoints);
+
+        let key = keys.find(k => k >= number);
+
+        let value = key ? breakPoints[key] : more;
+        return Math.ceil((number * 1.05) / value) * value;
+
+    }
+
+
+    function setTarget(number, options) {
+        if ((number * 1.05) < options.target || !options.autoTarget) {
+            return options.target;
+        }
+        else {
+            return roundUp(number);
         }
     }
 
     async function fetchCounter(name) {
         console.log("fetching...")
         //const url = new URL(name, apiUrl)
-        const url = new URL("test11", apiUrl)
+        const url = new URL(name, apiUrl)
 
         try {
             const response = await fetch(url);
@@ -50,8 +65,14 @@ function ageraCounter() {
         }
     }
 
-    function updateCounterValue(element, value) {
-        element.textContent = value;
+    function updateCounterValue(element, value, options) {
+        if (!options.compact) {
+            element.textContent = value.toLocaleString(options.local);
+        }
+        else {
+            const compact = new Intl.NumberFormat(options.local, options.compactDisplay).format(value);
+            element.textContent = compact;
+        }
 
         console.log("New counter value: ", value)
     }
@@ -61,55 +82,65 @@ function ageraCounter() {
         console.log('updated Limiter percent', element.style.width);
     }
 
-    function updateTargetValue(element, target) {
-        element.textContent = target
+    function updateTargetValue(element, target, options) {
+        if (!options.compact) {
+            element.textContent = target.toLocaleString(options.local);
+        } else {
+            const compact = new Intl.NumberFormat(options.local, options.compactDisplay).format(target);
+            element.textContent = compact;
+
+        }
         console.log("updated target value: ", target)
     }
-    function showElement(element, current, hidebelow) {
-        if (current > hidebelow) {
+
+    function showElement(element, current, options) {
+        if (current > options.hideBelow) {
             element.style.opacity = 1;
         }
     }
 
     async function processCounterElement(element) {
-        //const counterName = element.getAttribute('data-countername');
-        //const userTargetValue = element.getAttribute("data-countertarget") || 0;
-        //const userHideBelow = element.getAttribute("data-counter-hide-below") || 0;
 
-        const counterName = element.dataset.countername;
+        const counterName = element.dataset.counterName;
         console.log("countername: ", counterName)
         const options = {
             target: element.dataset.counterTarget || 0,
             hideBelow: element.dataset.hideBelow || 50,
             autoTarget: element.dataset.counterAutoTarget || true,
+            local: element.dataset.counterLocal || undefined, //"sv-SE",
+            compact: element.dataset.counterCompact || false,
+            compactDisplay: {
+                notation: "compact",
+                compactDisplay: "short"
+            },
         }
-        const userTargetValue = element.dataset.counterTarget || 0;
-        const currentValue = await fetchCounter(counterName) + 1700;
-        const targetValue = setTarget(currentValue, options.autoTarget);
+        const currentValue = await fetchCounter(counterName);
+        const targetValue = setTarget(currentValue, options);
+        console.log("targetValue: ", targetValue)
 
 
-        // Update all the Current values:
+        // Update all the CURRENT VALUES:
         const currentValueElements = element.querySelectorAll(
             '.counter-current-value'
         );
         for (let currentValueElement of currentValueElements) {
-            updateCounterValue(currentValueElement, currentValue);
-            showElement(currentValueElement, currentValue, options.hideBelow)
+            updateCounterValue(currentValueElement, currentValue, options);
+            showElement(currentValueElement, currentValue, options)
         }
 
-        // Update all targets:
+        // Update all TARGETS:
         const targetValuesElement = element.querySelectorAll('.counter-target-value');
         for (let targetValueElement of targetValuesElement) {
-            updateTargetValue(targetValueElement, targetValue)
-            showElement(targetValueElement, currentValue, options.hideBelow)
+            updateTargetValue(targetValueElement, targetValue, options)
+            showElement(targetValueElement, currentValue, options)
         }
 
-        // Update all counterbar-limiter
+        // Update all LIMITER
         let limiters = element.querySelectorAll(".counterbar-limiter");
         for (let limiter of limiters) {
             updateLimiterWidth(limiter, currentValue, targetValue)
         }
-        showElement(element, currentValue, options.hideBelow)
+        showElement(element, currentValue, options)
     }
     return {
         processCounterElement,
@@ -132,12 +163,9 @@ document.head.appendChild(styleTag);
 
 // Usage
 document.addEventListener('DOMContentLoaded', function () {
-    const counterElements = document.querySelectorAll('[data-countername]');
+    const counterElements = document.querySelectorAll('[data-counter-name]');
     const counter = ageraCounter();
     for (let element of counterElements) {
         counter.processCounterElement(element);
     }
 });
-
-
-
