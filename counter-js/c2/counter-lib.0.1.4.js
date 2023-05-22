@@ -42,7 +42,6 @@ function ageraCounter() {
 
     async function fetchCounter(name) {
         console.log("fetching...")
-        //const url = new URL(name, apiUrl)
         const url = new URL(name, apiUrl)
 
         try {
@@ -66,12 +65,13 @@ function ageraCounter() {
     }
 
     function updateCounterValue(element, value, options) {
-        if (!options.compact) {
-            element.textContent = value.toLocaleString(options.locale);
+        try {
+            localeNotation = new Intl.NumberFormat(options.locale, options.compactDisplay).format(value);
+            element.textContent = localeNotation;
         }
-        else {
-            const compact = new Intl.NumberFormat(options.locale, options.compactDisplay).format(value);
-            element.textContent = compact;
+        catch {
+            localeNotation = new Intl.NumberFormat(options.compactDisplay).format(value);
+            element.textContent = localeNotation;
         }
     }
 
@@ -80,13 +80,12 @@ function ageraCounter() {
     }
 
     function updateTargetValue(element, target, options) {
-        if (!options.compact) {
-            const long = new Intl.NumberFormat(options.locale).format(target);
-            element.textContent = long
-        } else {
-            const compact = new Intl.NumberFormat(options.locale, options.compactDisplay).format(target);
-            element.textContent = compact;
-
+        try {
+            const localeNotation = new Intl.NumberFormat(options.locale, options.compactDisplay).format(target);
+            element.textContent = localeNotation;
+        } catch {
+            const localeNotation = new Intl.NumberFormat(options.compactDisplay).format(target);
+            element.textContent = localeNotation;
         }
     }
 
@@ -103,13 +102,18 @@ function ageraCounter() {
             target: element.dataset.counterTarget || 0,
             hideBelow: element.dataset.counterHideBelow || 50,
             autoTarget: element.dataset.counterAutoTarget || true,
-            locale: element.dataset.counterLocale || undefined,  //"sv-SE", 
+            locale: document.documentElement.lang + "åäössd" || element.dataset.counterLocale || undefined,  //"sv-SE", 
             compact: element.dataset.counterCompact || false,
             compactDisplay: {
-                notation: "compact",
+                notation: element.dataset.counterCompact === undefined ? "standard" : "compact",
             },
         }
-        const currentValue = await fetchCounter(counterName);
+        let currentValue;
+        if (counterName.toLowerCase() === "default") {
+            currentValue = 125;
+        } else {
+            currentValue = await fetchCounter(counterName);
+        }
         const targetValue = setTarget(currentValue, options);
 
         // Update all the CURRENT VALUES:

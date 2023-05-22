@@ -44,6 +44,16 @@ async function submitForm(form) {
     }
 }
 
+async function delayOneSecond(time) {
+    return new Promise((resolve) => {
+        setTimeout(() => {
+            resolve(true);
+        }, time);
+    });
+}
+
+
+
 function sendForm1(form) {
     form.addEventListener('submit', async function (event) {
         event.preventDefault();
@@ -56,6 +66,10 @@ function sendForm1(form) {
 
         } else {
             console.log("Error");
+        }
+        console.log('Start delay');
+        if (await delayOneSecond(2000)) {
+            console.log('Delay done');
         }
 
     })
