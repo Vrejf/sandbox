@@ -97,12 +97,12 @@ function ageraCounter() {
 
     async function processCounterElement(element) {
 
-        const counterName = element.dataset.counterName;
+        const counterName = element.dataset.counterName || "default";
         const options = {
             target: element.dataset.counterTarget || 0,
             hideBelow: element.dataset.counterHideBelow || 50,
             autoTarget: element.dataset.counterAutoTarget || true,
-            locale: document.documentElement.lang + "åäössd" || element.dataset.counterLocale || undefined,  //"sv-SE", 
+            locale: document.documentElement.lang || element.dataset.counterLocale || undefined,  //"sv-SE", 
             compact: element.dataset.counterCompact || false,
             compactDisplay: {
                 notation: element.dataset.counterCompact === undefined ? "standard" : "compact",
