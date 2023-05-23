@@ -1,9 +1,13 @@
 //an-bridge.0.3.js
 
 function anSubmit(form) {
-    console.log("AN Submit function");
     const thisUrl = new URL(window.location.href);
     const utmSource = thisUrl.searchParams.get("utm_source") || thisUrl.searchParams.get("source");
+    const options = {
+        preventDefault: JSON.parse(form.dataset.anPreventdefault.toLowerCase()) ?? true,
+        redirect: form.getAttribute("redirect") ?? false,
+        endpoint: form.getAttribute("action") ?? undefined
+    }
 
     function prepAnData(form, options) {
         const formData = new FormData(form);
@@ -51,18 +55,22 @@ function anSubmit(form) {
         console.log("prepping wf data")
         const formData = new FormData(form);
         const searchParams = new URLSearchParams();
+        const wfUrl = new URL(document.querySelector("html").dataset.wfSite, 'https://webflow.com/api/v1/form/')
         searchParams.append('name', form.getAttribute("name"));
         searchParams.append('source', window.location.href);
         searchParams.append("test", false)
         searchParams.append("dolphin", false)
 
+        for (const pair of formData.entries()) {
+            const fieldName = `fields[${pair[0]}]`;
+            searchParams.append(fieldName, pair[1]);
+        }
+
         const data = {
+            url: wfUrl.href,
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body:
-                JSON.stringify({
-                }),
-
+            body: searchParams.toString(),
         };
         return data;
     }
@@ -89,19 +97,24 @@ function anSubmit(form) {
         const failElement = parent.querySelector(".w-form-fail");
 
         if (ok) {
-            //form.style.display = 'none'; // Hide the form
             doneElement.style.display = 'block'; // Show the success element
             failElement.style.display = 'none'; // Hide the failure element
-            console.log("display done");
         } else {
-
-            //form.style.display = 'none'; // Hide the form
             doneElement.style.display = 'none';
             failElement.style.display = 'block';
-            console.log("display fail");
         }
 
     }
+
+    function redirect() {
+        if (options.redirect) {
+            const utmParams = new URLSearchParams(window.location.search).toString();
+            const updatedRedirectUrl = options.redirect + (options.redirect.includes('?') ? '&' : '?') + utmParams.toString();
+            window.location.href = updatedRedirectUrl;
+        } else {
+            console.log("No redirect")
+        };
+    };
 
     async function handleFetchRequests(requestList, form) {
         try {
@@ -121,6 +134,7 @@ function anSubmit(form) {
 
             const responses = await Promise.all(promises);
             formStatus(form, true)
+            redirect();
 
             // All responses are OK
         } catch (error) {
@@ -130,13 +144,6 @@ function anSubmit(form) {
     }
 
     async function pressSubmit(form) {
-        console.log("Update counter: ", form.dataset.counterUpdate)
-        const options = {
-            preventDefault: form.getAttribute("data-an-preventdefault") || true,
-            redirect: form.getAttribute("redirect") || undefined,
-            endpoint: form.getAttribute("action") || undefined
-        }
-        console.log("options: ", options)
         form.addEventListener("submit", async function (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -153,7 +160,9 @@ function anSubmit(form) {
             if (options.endpoint) {
                 requestList.push(prepAnData(form, options));
             }
-
+            if (!options.preventDefault) { // prevent default is False
+                requestList.push(prepWfData(form));
+            }
             if (requestList.length > 0) {
                 await handleFetchRequests(requestList, form);
             }
@@ -168,9 +177,8 @@ function anSubmit(form) {
 // Usage
 document.addEventListener('DOMContentLoaded', function () {
     const anForms = document.querySelectorAll("[data-an-bridge='true']");
-    const submitter = anSubmit();
     for (let form of anForms) {
-        console.log("AN form: ", form.getAttribute("name"))
+        const submitter = anSubmit(form);
         submitter.pressSubmit(form);
     }
 });
