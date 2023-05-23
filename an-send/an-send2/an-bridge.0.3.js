@@ -1,12 +1,4 @@
-//an-bridge.0.2.js
-const queryString = window.location.search;
-const thisUrl = new URL(window.location.href);
-const urlParams = new URLSearchParams(queryString);
-const utmSource = urlParams.get("utm_source") || urlParams.get("source");
-
-const anForms = document.querySelectorAll("[data-an-bridge='true']");
-
-
+//an-bridge.0.3.js
 async function postData(url, headers, body, form, event) {
     await fetch(url, {
         method: "POST",
@@ -22,66 +14,154 @@ async function postData(url, headers, body, form, event) {
         });
 }
 
-anForms.forEach(function (form) {
-    console.log("Form to AN: " + form.getAttribute("id"));
-    const preventdef = form.getAttribute("data-an-preventdefault")
-    console.log("Prevent default: ", preventdef)
+function anSubmit(form) {
+    console.log("AN Submit function");
+    const thisUrl = new URL(window.location.href);
+    const utmSource = thisUrl.searchParams.get("utm_source") || thisUrl.searchParams.get("source");
 
-    form.addEventListener("submit", async function (event) {
-        if (form.getAttribute("data-an-preventdefault") === "true") {
-            event.preventDefault();
-        }
-        const url = form.getAttribute("data-an-url");
-
+    function prepAnData(form, options) {
         const formData = new FormData(form);
-        const headers = {
-            "Content-Type": "application/json"
-        };
 
         const data = {
-            person: {
-                given_name: formData.get("first"),
-                family_name: formData.get("last"),
-                email_addresses: [
-                    {
-                        address: formData.get("email_address")
-                    }
-                ],
-                phone_numbers: [
-                    {
-                        number: formData.get("phone_number") || ""
+            url: options.endpoint,
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body:
+                JSON.stringify({
+                    person: {
+                        given_name: formData.get("first"),
+                        family_name: formData.get("last"),
+                        email_addresses: [
+                            {
+                                address: formData.get("email_address")
+                            }
+                        ],
+                        phone_numbers: [
+                            {
+                                number: formData.get("phone_number") || ""
 
+                            }
+                        ],
+                        postal_addresses: [
+                            {
+                                postal_code: formData.get("postal_code") || "",
+                                address_lines: formData.get("address") || "",
+                                region: formData.get("region") || "",
+                                country: formData.get("country") || ""
+                            }
+                        ]
+                    },
+                    "action_network:referrer_data": {
+                        source: utmSource ? utmSource.toString() : "",
+                        website: thisUrl.hostname + thisUrl.pathname
                     }
-                ],
-                postal_addresses: [
-                    {
-                        postal_code: formData.get("postal_code") || "",
-                        address_lines: formData.get("address") || "",
-                        region: formData.get("region") || "",
-                        country: formData.get("country") || ""
-                    }
-                ]
-            },
-            "action_network:referrer_data": {
-                source: utmSource ? utmSource.toString() : "",
-                website: thisUrl.hostname + thisUrl.pathname
-            }
+                }),
         };
+        console.log("prepAnData: ", data)
+        console.log("andata name: ", data.body.person.given_name)
+        return data;
+    };
 
 
-        const postDone = await postData(url, headers, data, form, event);
+    function prepWfData(form) {
+        console.log("prepping wf data")
+        const formData = new FormData(form);
+        const searchParams = new URLSearchParams();
+        searchParams.append('name', form.getAttribute("name"));
+        searchParams.append('source', window.location.href);
+        searchParams.append("test", false)
+        searchParams.append("dolphin", false)
 
-        if (form.getAttribute("data-an-preventdefault") === "true") {
-            console.log("Redirect ->", form.getAttribute("redirect"));
-            window.location.href = form.getAttribute("redirect");
-            return false;
+        const data = {
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body:
+                JSON.stringify({
+                }),
 
-        } else {
-            console.log("AN ok, return...");
-            return true;
-            form.submit();
+        };
+        return data;
+    }
+
+
+    function prepCounterData(counterName) {
+        const data = {
+            url: new URL(counterName, "https://utils-api.vercel.app/api/count/").href,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                name: "default",
+                site: document.querySelector("html").dataset.wfSite
+            })
         }
+        console.log("prepCounterData: ", data)
+        return data;
+    };
+
+    async function fetcher(request) {
+        console.log("fetching...")
+        try {
+            const response = await fetch(
+                request.url, {
+                method: request.method,
+                headers: request.headers,
+                body: request.body
+            })
+        }
+        catch (error) {
+            console.error(error);
+        }
+    };
 
 
-    });
+    async function pressSubmit(form) {
+        console.log("Update counter: ", form.dataset.counterUpdate)
+        const options = {
+            preventDefault: form.getAttribute("data-an-preventdefault") || true,
+            redirect: form.getAttribute("redirect") || undefined,
+            endpoint: form.getAttribute("action") || undefined
+        }
+        console.log("options: ", options)
+        form.addEventListener("submit", async function (event) {
+            event.preventDefault();
+            event.stopPropagation();
+
+            console.log("clicked submit")
+
+            // list with all request DATA:
+            let requestList = []
+
+            const counterUpdate = form.dataset.counterUpdate;
+            if (counterUpdate) {
+                requestList.push(prepCounterData(counterUpdate));
+            }
+            if (options.endpoint) {
+                requestList.push(prepAnData(form, options));
+            }
+            console.log("requestList: ", requestList)
+            // fetch all request
+            // update counter
+            //  Post to webflow CSV
+            //  if post to action network succeded whow success message, else fail
+
+
+
+        });
+    };
+    return {
+        pressSubmit,
+    };
+};
+
+
+// Usage
+document.addEventListener('DOMContentLoaded', function () {
+    const anForms = document.querySelectorAll("[data-an-bridge='true']");
+    const submitter = anSubmit();
+    for (let form of anForms) {
+        console.log("AN form: ", form.getAttribute("name"))
+        submitter.pressSubmit(form);
+    }
 });
