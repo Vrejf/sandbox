@@ -1,18 +1,4 @@
 //an-bridge.0.3.js
-async function postData(url, headers, body, form, event) {
-    await fetch(url, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(body)
-    })
-        .then(response => response.json())
-        .then(data => {
-            console.log("statuscode: ", data.status)
-        })
-        .catch(error => {
-            console.error(error);
-        });
-}
 
 function anSubmit(form) {
     console.log("AN Submit function");
@@ -57,8 +43,6 @@ function anSubmit(form) {
                     }
                 }),
         };
-        console.log("prepAnData: ", data)
-        console.log("andata name: ", data.body.person.given_name)
         return data;
     };
 
@@ -96,37 +80,54 @@ function anSubmit(form) {
                 site: document.querySelector("html").dataset.wfSite
             })
         }
-        console.log("prepCounterData: ", data)
         return data;
     };
 
-    async function fetcher(request) {
-        console.log("fetching...")
-        try {
-            const response = await fetch(
-                request.url, {
-                method: request.method,
-                headers: request.headers,
-                body: request.body
-            })
-        }
-        catch (error) {
-            console.error(error);
-        }
-    };
-    function showMessage(status, form) {
-        // const parent = form.parent // change this
-        // const ok = parent.select ok // change this
-        // const fail = parent.select fail // change
-        if (!status) {
-            fail.block // change
-            ok.hide
-        } else {
-            ok.block
-            fail.hidee
-        }
-    };
+    function formStatus(form, ok) {
+        const parent = form.parentNode;
+        const doneElement = parent.querySelector(".w-form-done");
+        const failElement = parent.querySelector(".w-form-fail");
 
+        if (ok) {
+            //form.style.display = 'none'; // Hide the form
+            doneElement.style.display = 'block'; // Show the success element
+            failElement.style.display = 'none'; // Hide the failure element
+            console.log("display done");
+        } else {
+
+            //form.style.display = 'none'; // Hide the form
+            doneElement.style.display = 'none';
+            failElement.style.display = 'block';
+            console.log("display fail");
+        }
+
+    }
+
+    async function handleFetchRequests(requestList, form) {
+        try {
+            const promises = requestList.map(async (request) => {
+                const response = await fetch(request.url, {
+                    method: request.method,
+                    headers: request.headers,
+                    body: request.body
+                });
+
+                if (!response.ok) {
+                    formStatus(form, false)
+                    throw new Error('Response error');
+                }
+                return response.json();
+            });
+
+            const responses = await Promise.all(promises);
+            formStatus(form, true)
+
+            // All responses are OK
+        } catch (error) {
+            formStatus(form, false)
+            console.error('An error occurred:', error);
+        }
+    }
 
     async function pressSubmit(form) {
         console.log("Update counter: ", form.dataset.counterUpdate)
@@ -152,25 +153,10 @@ function anSubmit(form) {
             if (options.endpoint) {
                 requestList.push(prepAnData(form, options));
             }
-            console.log("requestList: ", requestList)
-            // fetch all request
-            // update counter
-            //  Post to webflow CSV
-            //  if post to action network succeded whow success message, else fail
-            // if (requestList.length > 0){
-            // fetches = send all requests...
-            // if (fetches) {
-            //show success
-            //     if (redirect) {
-            //         redirect to page
-            //     }
-            // } else {
-            //     show fail
-            // }
 
-
-
-
+            if (requestList.length > 0) {
+                await handleFetchRequests(requestList, form);
+            }
         });
     };
     return {
