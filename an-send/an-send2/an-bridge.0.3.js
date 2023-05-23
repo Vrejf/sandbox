@@ -123,7 +123,7 @@ function anSubmit(form) {
             ok.hide
         } else {
             ok.block
-            fail.hide
+            fail.hidee
         }
     };
 
