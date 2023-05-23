@@ -115,10 +115,10 @@ function anSubmit(form) {
         }
     };
     function showMessage(status, form) {
-        const parent = form.parent // change this
-        const ok = parent.select ok // change this
-        const fail = parent.select fail // change
-        if (!status){
+        // const parent = form.parent // change this
+        // const ok = parent.select ok // change this
+        // const fail = parent.select fail // change
+        if (!status) {
             fail.block // change
             ok.hide
         } else {
@@ -157,17 +157,17 @@ function anSubmit(form) {
             // update counter
             //  Post to webflow CSV
             //  if post to action network succeded whow success message, else fail
-            if (requestList.length > 0){
-                // fetches = send all requests...
-                // if (fetches) {
-                    show success
-                    if (redirect) {
-                        redirect to page
-                    }
-                } else {
-                    show fail
-                }
-            }
+            // if (requestList.length > 0){
+            // fetches = send all requests...
+            // if (fetches) {
+            //show success
+            //     if (redirect) {
+            //         redirect to page
+            //     }
+            // } else {
+            //     show fail
+            // }
+
 
 
 
