@@ -3,6 +3,8 @@
 function anSubmit(form) {
     const thisUrl = new URL(window.location.href);
     const utmSource = thisUrl.searchParams.get("utm_source") || thisUrl.searchParams.get("source");
+    const submitButton = form.querySelector('input[type="submit"]');
+    const submitText = submitButton.value;
     const options = {
         preventDefault: JSON.parse(form.dataset.anPreventdefault.toLowerCase()) ?? true,
         redirect: form.getAttribute("redirect") ?? false,
@@ -102,6 +104,7 @@ function anSubmit(form) {
         } else {
             doneElement.style.display = 'none';
             failElement.style.display = 'block';
+            submitButton.value = submitText;
         }
 
     }
@@ -133,10 +136,11 @@ function anSubmit(form) {
             });
 
             const responses = await Promise.all(promises);
+
+            // All responses are OK
             formStatus(form, true)
             redirect();
 
-            // All responses are OK
         } catch (error) {
             formStatus(form, false)
             console.error('An error occurred:', error);
@@ -147,8 +151,7 @@ function anSubmit(form) {
         form.addEventListener("submit", async function (event) {
             event.preventDefault();
             event.stopPropagation();
-
-            console.log("clicked submit")
+            submitButton.value = submitButton.dataset.wait || "Sending...";
 
             // list with all request DATA:
             let requestList = []
