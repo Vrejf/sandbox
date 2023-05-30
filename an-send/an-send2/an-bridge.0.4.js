@@ -1,4 +1,4 @@
-//an-bridge.0.3.js
+//an-bridge.0.4.js
 
 function anSubmit(form) {
     const thisUrl = new URL(window.location.href);
@@ -43,6 +43,9 @@ function anSubmit(form) {
                             }
                         ]
                     },
+                    "add_tags": [
+                        formData.get("tags") || ""
+                    ],
                     "action_network:referrer_data": {
                         source: utmSource ? utmSource.toString() : "",
                         website: thisUrl.hostname + thisUrl.pathname
