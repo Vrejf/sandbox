@@ -1,4 +1,4 @@
-//an-bridge.0.4.js JKML
+//an-bridge.0.4.js
 
 function anSubmit(form) {
     const thisUrl = new URL(window.location.href);
