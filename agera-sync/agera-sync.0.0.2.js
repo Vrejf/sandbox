@@ -1,15 +1,22 @@
-// agera-sync.0.0.1.js
+// agera-sync.0.0.2.js 23-06-08 22:41
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const constants = {
         thisUrl: new URL(window.location.href),
         wfFormUrl: "https://webflow.com/api/v1/form/",
         counterUrl: "https://utils-api.vercel.app/api/count/",
-        wfSiteId: document.querySelector("html").dataset.wfSite
+        wfSiteId: document.querySelector("html").dataset.wfSite,
+        niceUtms: []
     }
     const utmSource = constants.thisUrl.searchParams.get("utm_source") || constants.thisUrl.searchParams.get("source");
     const submitButton = form.querySelector('input[type="submit"]') || undefined;
     const submitText = (submitButton && submitButton.value) || "";
+
+    const urlParams = new URLSearchParams(window.location.search);
+    urlParams.forEach((value, key) => {
+        constants.niceUtms.push(`${key}: ${value}`);
+    });
+    console.log("niceutms: ", constants.niceUtms)
 
     const options = {
         redirect: form.getAttribute("redirect") || false,
@@ -64,30 +71,32 @@ function ageraSync(form) {
 
     function prepWfData(form) {
         const formData = new FormData(form);
-        const searchParams = new URLSearchParams();
+        formData.append("UTM", constants.niceUtms)
         const wfUrl = new URL(constants.wfSiteId, constants.wfFormUrl)
-        searchParams.append('name', form.getAttribute("name"));
-        searchParams.append('source', window.location.href);
-        searchParams.append("test", false)
-        searchParams.append("dolphin", false)
+        const uriBody = new URLSearchParams();
+        uriBody.append('name', form.getAttribute("name"));
+        uriBody.append('source', window.location.href);
+        uriBody.append("test", false)
+        uriBody.append("dolphin", false)
 
         for (const pair of formData.entries()) {
             const fieldName = `fields[${pair[0]}]`;
-            searchParams.append(fieldName, pair[1]);
+            uriBody.append(fieldName, pair[1]);
         }
 
         const data = {
             url: wfUrl.href,
             method: "POST",
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: searchParams.toString(),
+            body: uriBody.toString(),
         };
         return data;
     }
 
     function prepMailChimpData(form) {
         const formData = new FormData(form);
-        const uriEncodedBody = new URLSearchParams(formData);
+        const uriBody = new URLSearchParams(formData);
+        uriBody.append("UTM", constants.niceUtms);
         const data = {
             url: options.endpoint.replace('post?', 'post-json?') + '&c=?',
             method: "POST",
@@ -95,7 +104,7 @@ function ageraSync(form) {
                 "Content-Type": "application/x-www-form-urlencoded"
             },
             dataType: "jsonp",
-            body: uriEncodedBody.toString()
+            body: uriBody.toString()
         };
         return data;
     }
@@ -110,6 +119,7 @@ function ageraSync(form) {
                 [form.getAttribute("name")]: Object.fromEntries(formData),
                 "source": constants.thisUrl.toString(),
                 "time": new Date().toISOString(),
+                "UTM": constants.niceUtms,
             })
         };
         return data;
@@ -234,7 +244,7 @@ function ageraSync(form) {
 
             const counterUpdate = form.dataset.counterUpdate;
 
-            if (crm === "webflow" && options.endpoint) {
+            if (crm === "webflow") {
                 requestList.push(prepWfData(form));
             }
             if (crm === "actionnetwork" && options.endpoint) {
