@@ -92,10 +92,11 @@ function ageraSync(form) {
             url: options.endpoint.replace('post?', 'post-json?') + '&c=?',
             method: "POST",
             headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/x-www-form-urlencoded"
             },
             dataType: "jsonp",
-            body: JSON.stringify(Object.fromEntries(formData))
+            //body: JSON.stringify(Object.fromEntries(formData)),
+            body: uriEncodedBody
         };
         return data;
     }
@@ -176,6 +177,7 @@ function ageraSync(form) {
             const result = await $.ajax({
                 url: request.url,
                 type: request.method,
+                headers: request.headers,
                 data: request.body,
                 dataType: request.dataType,
             });
