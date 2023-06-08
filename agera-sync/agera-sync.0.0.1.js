@@ -96,7 +96,7 @@ function ageraSync(form) {
             },
             dataType: "jsonp",
             //body: JSON.stringify(Object.fromEntries(formData)),
-            body: uriEncodedBody
+            body: uriEncodedBody.toString()
         };
         return data;
     }
