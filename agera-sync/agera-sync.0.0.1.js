@@ -1,6 +1,6 @@
-//an-bridge.0.5.js
+//agera-sync.0.0.1.js
 
-function anSubmit(form) {
+function ageraSync(form) {
     const thisUrl = new URL(window.location.href);
     const utmSource = thisUrl.searchParams.get("utm_source") || thisUrl.searchParams.get("source");
     const submitButton = form.querySelector('input[type="submit"]') || undefined;
@@ -8,14 +8,13 @@ function anSubmit(form) {
     // const submitText = submitButton.value || "";
 
     const options = {
-        saveWeblowForm: Boolean(form.dataset.saveWeblowForm) || false,
         redirect: form.getAttribute("redirect") || false,
         endpoint: form.getAttribute("action") || undefined,
         addUtm: Boolean(form.dataset.anUtmRedirect) || false
     }
     console.log("utm: ", options.addUtm)
 
-    function prepAnData(form, options) {
+    function prepAnData(form) {
         const formData = new FormData(form);
 
         const data = {
@@ -82,11 +81,31 @@ function anSubmit(form) {
         };
         return data;
     }
+    function prepMailChimpData(form) {
+        const formData = new FormData(form);
+        const uriEncodedBody = new URLSearchParams();
+        uriEncodedBody.append('name', form.getAttribute("name"));
+        uriEncodedBody.append('source', window.location.href);
+        uriEncodedBody.append("test", false)
+
+        for (const pair of formData.entries()) {
+            const fieldName = `fields[${pair[0]}]`;
+            uriEncodedBody.append(fieldName, pair[1]);
+        }
+
+        const data = {
+            url: new URL(options.endpoint).toString(),
+            method: "POST",
+            headers: { "Content-Type": "application/x-www-form-urlencoded" },
+            body: uriEncodedBody.toString(),
+        };
+        return data;
+    }
 
 
     function prepCounterData(counterName) {
         const data = {
-            url: new URL(counterName, "https://utils-api.vercel.app/api/count/").href,
+            url: new URL(counterName, "https://utils-api.vercel.app/api/count/").toString(),
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -159,7 +178,14 @@ function anSubmit(form) {
         }
     }
 
-    async function pressSubmit(form) {
+    async function handleForm(form) {
+        const geturl = new URL(options.endpoint).toString()
+        const geturl2 = new URL(options.endpoint).href
+        console.log("endpoint: ", geturl)
+        console.log("endpoint2: ", geturl2)
+
+        const crm = form.dataset.crm.toLowerCase();
+
         form.addEventListener("submit", async function (event) {
             event.preventDefault();
             event.stopPropagation();
@@ -169,14 +195,18 @@ function anSubmit(form) {
             let requestList = []
 
             const counterUpdate = form.dataset.counterUpdate;
-            if (counterUpdate) {
-                requestList.push(prepCounterData(counterUpdate));
-            }
-            if (options.endpoint) {
-                requestList.push(prepAnData(form, options));
-            }
-            if (options.saveWeblowForm) { // save webflow form
+
+            if (crm === "webflow" && options.endpoint) {
                 requestList.push(prepWfData(form));
+            }
+            if (crm === "actionnetwork" && options.endpoint) {
+                requestList.push(prepAnData(form));
+            }
+            if (crm === "mailchimp" && options.endpoint) {
+                requestList.push(prepMailChimpData(form));
+            }
+            if (counterUpdate && counterUpdate !== "default") {
+                requestList.push(prepCounterData(counterUpdate));
             }
             if (requestList.length > 0) {
                 await handleFetchRequests(requestList, form);
@@ -184,16 +214,17 @@ function anSubmit(form) {
         });
     };
     return {
-        pressSubmit,
+        handleForm,
     };
 };
 
 
 // Usage
 document.addEventListener('DOMContentLoaded', function () {
-    const anForms = document.querySelectorAll("[data-an-bridge='true']");
-    for (let form of anForms) {
-        const submitter = anSubmit(form);
-        submitter.pressSubmit(form);
+    const crmForms = document.querySelectorAll("[data-crm]");
+    console.log("data-crm: ", crmForms[0].dataset.crm)
+    for (let form of crmForms) {
+        const submitter = ageraSync(form);
+        submitter.handleForm(form);
     }
 });

@@ -1,6 +1,6 @@
 //an-bridge.0.5.js
 
-function anSubmit(form) {
+function ageraSync(form) {
     const thisUrl = new URL(window.location.href);
     const utmSource = thisUrl.searchParams.get("utm_source") || thisUrl.searchParams.get("source");
     const submitButton = form.querySelector('input[type="submit"]') || undefined;
@@ -193,7 +193,7 @@ function anSubmit(form) {
 document.addEventListener('DOMContentLoaded', function () {
     const anForms = document.querySelectorAll("[data-an-bridge='true']");
     for (let form of anForms) {
-        const submitter = anSubmit(form);
+        const submitter = ageraSync(form);
         submitter.pressSubmit(form);
     }
 });
