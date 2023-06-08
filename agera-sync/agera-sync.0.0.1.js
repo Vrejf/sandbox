@@ -1,18 +1,21 @@
-//agera-sync.0.0.1.js
-
+// agera-sync.0.0.1.js
+// Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
-    const thisUrl = new URL(window.location.href);
-    const utmSource = thisUrl.searchParams.get("utm_source") || thisUrl.searchParams.get("source");
+    const constants = {
+        thisUrl: new URL(window.location.href),
+        wfFormUrl: "https://webflow.com/api/v1/form/",
+        counterUrl: "https://utils-api.vercel.app/api/count/",
+        wfSiteId: document.querySelector("html").dataset.wfSite
+    }
+    const utmSource = constants.thisUrl.searchParams.get("utm_source") || constants.thisUrl.searchParams.get("source");
     const submitButton = form.querySelector('input[type="submit"]') || undefined;
     const submitText = (submitButton && submitButton.value) || "";
-    // const submitText = submitButton.value || "";
 
     const options = {
         redirect: form.getAttribute("redirect") || false,
         endpoint: form.getAttribute("action") || undefined,
-        addUtm: Boolean(form.dataset.anUtmRedirect) || false
+        addUtm: Boolean(form.dataset.redirectUtm) || true
     }
-    console.log("utm: ", options.addUtm)
 
     function prepAnData(form) {
         const formData = new FormData(form);
@@ -51,7 +54,7 @@ function ageraSync(form) {
                     ],
                     "action_network:referrer_data": {
                         source: utmSource ? utmSource.toString() : "",
-                        website: thisUrl.hostname + thisUrl.pathname
+                        website: constants.thisUrl.hostname + constants.thisUrl.pathname
                     }
                 }),
         };
@@ -62,7 +65,7 @@ function ageraSync(form) {
     function prepWfData(form) {
         const formData = new FormData(form);
         const searchParams = new URLSearchParams();
-        const wfUrl = new URL(document.querySelector("html").dataset.wfSite, 'https://webflow.com/api/v1/form/')
+        const wfUrl = new URL(constants.wfSiteId, constants.wfFormUrl)
         searchParams.append('name', form.getAttribute("name"));
         searchParams.append('source', window.location.href);
         searchParams.append("test", false)
@@ -81,23 +84,33 @@ function ageraSync(form) {
         };
         return data;
     }
+
     function prepMailChimpData(form) {
         const formData = new FormData(form);
-        const uriEncodedBody = new URLSearchParams();
-        uriEncodedBody.append('name', form.getAttribute("name"));
-        uriEncodedBody.append('source', window.location.href);
-        uriEncodedBody.append("test", false)
+        const uriEncodedBody = new URLSearchParams(formData);
+        const data = {
+            url: options.endpoint.replace('post?', 'post-json?') + '&c=?',
+            method: "POST",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            dataType: "jsonp",
+            body: JSON.stringify(Object.fromEntries(formData))
+        };
+        return data;
+    }
 
-        for (const pair of formData.entries()) {
-            const fieldName = `fields[${pair[0]}]`;
-            uriEncodedBody.append(fieldName, pair[1]);
-        }
-
+    function prepZapierData(form) {
+        const formData = new FormData(form);
         const data = {
             url: new URL(options.endpoint).toString(),
             method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: uriEncodedBody.toString(),
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                [form.getAttribute("name")]: Object.fromEntries(formData),
+                "source": constants.thisUrl.toString(),
+                "time": new Date().toISOString(),
+            })
         };
         return data;
     }
@@ -105,14 +118,14 @@ function ageraSync(form) {
 
     function prepCounterData(counterName) {
         const data = {
-            url: new URL(counterName, "https://utils-api.vercel.app/api/count/").toString(),
+            url: new URL(counterName, constants.counterUrl).toString(),
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
                 name: "default",
-                site: document.querySelector("html").dataset.wfSite
+                site: constants.wfSiteId
             })
         }
         return data;
@@ -136,34 +149,62 @@ function ageraSync(form) {
 
     function redirect() {
         if (options.redirect) {
-            console.log("redirecting...")
+            console.log("Redirecting...")
             if (options.addUtm) {
-                const utmParams = new URLSearchParams(window.location.search).toString();
-                const updatedRedirectUrl = options.redirect + (options.redirect.includes('?') ? '&' : '?') + utmParams;
-                console.log("new url: ", updatedRedirectUrl)
+
+                const redirectUrl = new URL(options.redirect, constants.thisUrl);
+                const utmParams = new URLSearchParams(window.location.search);
+
+                redirectUrl.searchParams.forEach((value, param) => {
+                    if (!utmParams.has(param)) {
+                        utmParams.set(param, value);
+                    }
+                });
+
+                const updatedRedirectUrl = redirectUrl.origin + redirectUrl.pathname + (utmParams.toString() ? '?' + utmParams.toString() : '');
+
                 window.location.href = updatedRedirectUrl;
             } else {
-                window.location.href = options.redirect; //updatedRedirectUrl; - No added UTM
+                window.location.href = options.redirect;
             }
         } else {
-            console.log("No redirect")
+            console.log("No redirect defined")
         };
     };
+    async function ajaxCall(request) {
+        try {
+            const result = await $.ajax({
+                url: request.url,
+                type: request.method,
+                data: request.body,
+                dataType: request.dataType,
+            });
 
+            return result;
+        } catch (error) {
+            console.error(error);
+            throw new Error(error);
+        }
+    };
     async function handleFetchRequests(requestList, form) {
         try {
             const promises = requestList.map(async (request) => {
-                const response = await fetch(request.url, {
-                    method: request.method,
-                    headers: request.headers,
-                    body: request.body
-                });
+                if (!request.dataType) {
+                    const response = await fetch(request.url, {
+                        method: request.method,
+                        headers: request.headers,
+                        body: request.body,
+                    });
 
-                if (!response.ok) {
-                    formStatus(form, false)
-                    throw new Error('Response error');
+                    if (!response.ok) {
+                        formStatus(form, false)
+                        throw new Error('Response error');
+                    }
+                    return response.json();
                 }
-                return response.json();
+                if (request.dataType === "jsonp") {
+                    return await ajaxCall(request)
+                }
             });
 
             const responses = await Promise.all(promises);
@@ -178,12 +219,8 @@ function ageraSync(form) {
         }
     }
 
-    async function handleForm(form) {
-        const geturl = new URL(options.endpoint).toString()
-        const geturl2 = new URL(options.endpoint).href
-        console.log("endpoint: ", geturl)
-        console.log("endpoint2: ", geturl2)
 
+    async function handleForm(form) {
         const crm = form.dataset.crm.toLowerCase();
 
         form.addEventListener("submit", async function (event) {
@@ -205,11 +242,17 @@ function ageraSync(form) {
             if (crm === "mailchimp" && options.endpoint) {
                 requestList.push(prepMailChimpData(form));
             }
+            if (crm === "zapier" && options.endpoint) {
+                requestList.push(prepZapierData(form));
+            }
             if (counterUpdate && counterUpdate !== "default") {
                 requestList.push(prepCounterData(counterUpdate));
             }
             if (requestList.length > 0) {
                 await handleFetchRequests(requestList, form);
+            }
+            if (crm === "") {
+                console.log("no crm defined")
             }
         });
     };
@@ -222,7 +265,6 @@ function ageraSync(form) {
 // Usage
 document.addEventListener('DOMContentLoaded', function () {
     const crmForms = document.querySelectorAll("[data-crm]");
-    console.log("data-crm: ", crmForms[0].dataset.crm)
     for (let form of crmForms) {
         const submitter = ageraSync(form);
         submitter.handleForm(form);
