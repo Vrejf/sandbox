@@ -1,4 +1,4 @@
-// agera-sync.0.0.2.js 23-06-08 22:41
+// agera-sync.0.0.2.js 23-06-10 18.40
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const constants = {
@@ -6,16 +6,18 @@ function ageraSync(form) {
         wfFormUrl: "https://webflow.com/api/v1/form/",
         counterUrl: "https://utils-api.vercel.app/api/count/",
         wfSiteId: document.querySelector("html").dataset.wfSite,
-        niceUtms: []
+        //niceUtms: [],
+        niceUtms: Array.from(new URLSearchParams(window.location.search), ([key, value]) => `${key}: ${value}`)
+
     }
     const utmSource = constants.thisUrl.searchParams.get("utm_source") || constants.thisUrl.searchParams.get("source");
     const submitButton = form.querySelector('input[type="submit"]') || undefined;
     const submitText = (submitButton && submitButton.value) || "";
 
-    const urlParams = new URLSearchParams(window.location.search);
-    urlParams.forEach((value, key) => {
-        constants.niceUtms.push(`${key}: ${value}`);
-    });
+    // const urlParams = new URLSearchParams(window.location.search);
+    // urlParams.forEach((value, key) => {
+    //     constants.niceUtms.push(`${key}: ${value}`);
+    // });
     console.log("niceutms: ", constants.niceUtms)
 
     const options = {
@@ -23,10 +25,16 @@ function ageraSync(form) {
         endpoint: form.getAttribute("action") || undefined,
         addUtm: Boolean(form.dataset.redirectUtm) || true
     }
-
+    function prepData(form) {
+        const formData = new FormData(form);
+        function an() {
+            console.log("preppar data")
+            return "hejs"
+        }
+    }
     function prepAnData(form) {
         const formData = new FormData(form);
-
+        const test = prepData.an();
         const data = {
             url: options.endpoint,
             method: "POST",
@@ -271,7 +279,6 @@ function ageraSync(form) {
         handleForm,
     };
 };
-
 
 // Usage
 document.addEventListener('DOMContentLoaded', function () {
