@@ -14,23 +14,17 @@ function ageraSync(form) {
     const submitButton = form.querySelector('input[type="submit"]') || undefined;
     const submitText = (submitButton && submitButton.value) || "";
 
-    // const urlParams = new URLSearchParams(window.location.search);
-    // urlParams.forEach((value, key) => {
-    //     constants.niceUtms.push(`${key}: ${value}`);
-    // });
-    console.log("niceutms: ", constants.niceUtms)
-
     const options = {
         redirect: form.getAttribute("redirect") || false,
         endpoint: form.getAttribute("action") || undefined,
         addUtm: Boolean(form.dataset.redirectUtm) || true
     }
-    function prepData(form) {
-        const formData = new FormData(form);
-        function an() {
+    const prepData = {
+        formData: new FormData(form),
+        an() {
             console.log("preppar data")
             return "hejs"
-        }
+        },
     }
     function prepAnData(form) {
         const formData = new FormData(form);
