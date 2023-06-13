@@ -1,4 +1,4 @@
-// agera-sync.0.0.3.js 23-06-13 18:05
+// agera-sync.0.0.3.js 23-06-13 18:10
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const params = {
@@ -46,7 +46,7 @@ function ageraSync(form) {
             uriBody.append("UTM", params.niceUtms)
             return {
                 ...prepData.baseData,
-                url: params.endpoint.replace('post?', 'post-json?') + '&c=?';
+                url: params.endpoint.replace('post?', 'post-json?') + '&c=?',
                 headers: { "Content-Type": "application/x-www-form-urlencoded" },
                 dataType: "jsonp",
                 body: uriBody.toString()
