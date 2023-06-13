@@ -1,4 +1,4 @@
-// agera-sync.0.0.3.js 23-06-13 15.30
+// agera-sync.0.0.3.js 23-06-13 15.40
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const params = {
@@ -9,7 +9,7 @@ function ageraSync(form) {
         counterUrl: "https://utils-api-git-experimental-vrejf.vercel.app/api/counter/",
         niceUtms: Array.from(new URLSearchParams(window.location.search), ([key, value]) => `${key}: ${value}`),
         redirect: form.getAttribute("redirect") || false,
-        endpoint: form.getAttribute("action") ? new URL(form.getAttribute("action")) : null,
+        endpoint: form.getAttribute("action") ? new URL(form.getAttribute("action")).toString() : null,
         addUtm: Boolean(form.dataset.redirectUtm) || true,
         utmSource: new URLSearchParams(window.location.search).get("utm_source") || new URLSearchParams(window.location.search).get("source"),
         submitButton: form.querySelector('input[type="submit"]') || undefined,
@@ -17,7 +17,7 @@ function ageraSync(form) {
     }
 
     const prepData = {
-        data: { url: params.endpoint.toString(), method: "POST", headers: { "Content-Type": "application/json" } },
+        data: { url: params.endpoint, method: "POST", headers: { "Content-Type": "application/json" } },
 
         webFlow(form) {
             console.log("preppar data för webflow")
