@@ -3,7 +3,6 @@
 function ageraSync(form) {
     const params = {
         thisUrl: new URL(window.location.href),
-        wfFormUrl: "https://webflow.com/api/v1/form/",
         wfSiteId: document.querySelector("html").dataset.wfSite,
         wfUrl: new URL(document.querySelector("html").dataset.wfSite, "https://webflow.com/api/v1/form/"),
         counterUrl: "https://utils-api-git-experimental-vrejf.vercel.app/api/counter/",
