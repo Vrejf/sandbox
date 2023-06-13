@@ -1,4 +1,4 @@
-// agera-sync.0.0.3.js 23-06-13 18:10
+// agera-sync.0.0.3.js 23-06-13 18:17
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const params = {
@@ -53,13 +53,14 @@ function ageraSync(form) {
             }
         },
         zapier(form) {
-            prepData.data.body = JSON.stringify({
-                [form.getAttribute("name")]: Object.fromEntries(new FormData(form)),
-                "source": params.thisUrl.toString(),
-                "time": new Date().toISOString(),
-                "UTM": params.niceUtms,
-            })
-            return prepData.data;
+            return {
+                ...prepData.baseData, body: JSON.stringify({
+                    [form.getAttribute("name")]: Object.fromEntries(new FormData(form)),
+                    "source": params.thisUrl.toString(),
+                    "time": new Date().toISOString(),
+                    "UTM": params.niceUtms,
+                })
+            }
         },
         counter(counterName) {
             return {
@@ -70,33 +71,35 @@ function ageraSync(form) {
         },
         actionNetwork(form) {
             const formData = new FormData(form);
-            prepData.data.body =
-                JSON.stringify({
-                    person: {
-                        given_name: formData.get("first"),
-                        family_name: formData.get("last"),
-                        email_addresses: [
-                            { address: formData.get("email_address") }
-                        ],
-                        phone_numbers: [
-                            { number: formData.get("phone_number") || "" }
-                        ],
-                        postal_addresses: [
-                            {
-                                postal_code: formData.get("postal_code") || "",
-                                address_lines: formData.get("address") || "",
-                                region: formData.get("region") || "",
-                                country: formData.get("country") || ""
-                            }
-                        ]
-                    },
-                    "add_tags": [formData.getAll("tags") || ""],
-                    "action_network:referrer_data": {
-                        source: params.utmSource ? params.utmSource.toString() : "",
-                        website: params.thisUrl.hostname + params.thisUrl.pathname
-                    }
-                })
-            return prepData.data;
+            return {
+                ...prepData.baseData,
+                body:
+                    JSON.stringify({
+                        person: {
+                            given_name: formData.get("first"),
+                            family_name: formData.get("last"),
+                            email_addresses: [
+                                { address: formData.get("email_address") }
+                            ],
+                            phone_numbers: [
+                                { number: formData.get("phone_number") || "" }
+                            ],
+                            postal_addresses: [
+                                {
+                                    postal_code: formData.get("postal_code") || "",
+                                    address_lines: formData.get("address") || "",
+                                    region: formData.get("region") || "",
+                                    country: formData.get("country") || ""
+                                }
+                            ]
+                        },
+                        "add_tags": [formData.getAll("tags") || ""],
+                        "action_network:referrer_data": {
+                            source: params.utmSource ? params.utmSource.toString() : "",
+                            website: params.thisUrl.hostname + params.thisUrl.pathname
+                        }
+                    })
+            }
         },
     };
 
