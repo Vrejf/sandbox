@@ -1,4 +1,4 @@
-// agera-sync.0.0.3.js 23-06-13 15.40
+// agera-sync.0.0.3.js 23-06-13 15.55
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const params = {
@@ -32,11 +32,11 @@ function ageraSync(form) {
                 const fieldName = `fields[${pair[0]}]`;
                 uriBody.append(fieldName, pair[1]);
             }
-            return this.data = {
-                url: params.wfUrl.href,
-                body: uriBody.toString(),
-                headers: { "Content-Type": "application/x-www-form-urlencoded" }
-            };
+            prepData.data.url = params.wfUrl.href;
+            prepData.data.body = uriBody.toString();
+            prepData.data.headers = { "Content-Type": "application/x-www-form-urlencoded" };
+            console.log("data: ", prepData.data)
+            return prepData.data;
         },
         mailChimp(form) {
             console.log("preppar data för mailchimp")
