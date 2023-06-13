@@ -1,4 +1,4 @@
-// agera-sync.0.0.3.js 23-06-13 19:21
+// agera-sync.0.0.3.js 23-06-13 19:26
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const params = {
