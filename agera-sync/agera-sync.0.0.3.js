@@ -56,7 +56,7 @@ function ageraSync(form) {
             return {
                 ...prepData.baseData, body: JSON.stringify({
                     [form.getAttribute("name")]: Object.fromEntries(new FormData(form)),
-                    "source": params.thisUrl.toString(),
+                    "source": params.thisUrl.hostname + params.thisUrl.pathname,
                     "time": new Date().toISOString(),
                     "UTM": params.niceUtms,
                 })
