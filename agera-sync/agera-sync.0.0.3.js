@@ -21,7 +21,8 @@ function ageraSync(form) {
 
         webFlow(form) {
             console.log("preppar data för webflow")
-            const formData = new FormData(form).append("UTM", params.niceUtms)
+            const formData = new FormData(form)
+            formData.append("UTM", params.niceUtms)
             const uriBody = new URLSearchParams({
                 name: form.getAttribute("name"),
                 source: window.location.href,
