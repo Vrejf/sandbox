@@ -1,4 +1,4 @@
-// agera-sync.0.0.3.js 23-06-13 18:17
+// agera-sync.0.0.3.js 23-06-13 19:21
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const params = {
@@ -15,6 +15,7 @@ function ageraSync(form) {
         submitButton: form.querySelector('input[type="submit"]') || undefined,
     }
     params.submitText = (params.submitButton && params.submitButton.value) || ""
+
 
     const prepData = {
         baseData: { url: params.endpoint, method: "POST", headers: { "Content-Type": "application/json" } },
@@ -103,119 +104,6 @@ function ageraSync(form) {
         },
     };
 
-    function prepAnData(form) {
-        const formData = new FormData(form);
-        const data = {
-            url: params.endpoint,
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body:
-                JSON.stringify({
-                    person: {
-                        given_name: formData.get("first"),
-                        family_name: formData.get("last"),
-                        email_addresses: [
-                            {
-                                address: formData.get("email_address")
-                            }
-                        ],
-                        phone_numbers: [
-                            {
-                                number: formData.get("phone_number") || ""
-
-                            }
-                        ],
-                        postal_addresses: [
-                            {
-                                postal_code: formData.get("postal_code") || "",
-                                address_lines: formData.get("address") || "",
-                                region: formData.get("region") || "",
-                                country: formData.get("country") || ""
-                            }
-                        ]
-                    },
-                    "add_tags": [
-                        formData.getAll("tags") || ""
-                    ],
-                    "action_network:referrer_data": {
-                        source: params.utmSource ? params.utmSource.toString() : "",
-                        website: params.thisUrl.hostname + params.thisUrl.pathname
-                    }
-                }),
-        };
-        return data;
-    };
-
-    function prepWfData(form) {
-        const formData = new FormData(form);
-        formData.append("UTM", params.niceUtms)
-        const wfUrl = new URL(params.wfSiteId, params.wfFormUrl)
-        const uriBody = new URLSearchParams();
-        uriBody.append('name', form.getAttribute("name"));
-        uriBody.append('source', window.location.href);
-        uriBody.append("test", false)
-        uriBody.append("dolphin", false)
-
-        for (const pair of formData.entries()) {
-            const fieldName = `fields[${pair[0]}]`;
-            uriBody.append(fieldName, pair[1]);
-        }
-
-        const data = {
-            url: wfUrl.href,
-            method: "POST",
-            headers: { "Content-Type": "application/x-www-form-urlencoded" },
-            body: uriBody.toString(),
-        };
-        return data;
-    }
-
-    function prepMailChimpData(form) {
-        const formData = new FormData(form);
-        const uriBody = new URLSearchParams(formData);
-        uriBody.append("UTM", params.niceUtms);
-        const data = {
-            url: params.endpoint.replace('post?', 'post-json?') + '&c=?',
-            method: "POST",
-            headers: {
-                "Content-Type": "application/x-www-form-urlencoded"
-            },
-            dataType: "jsonp",
-            body: uriBody.toString()
-        };
-        return data;
-    }
-
-    function prepZapierData(form) {
-        const formData = new FormData(form);
-        const data = {
-            url: new URL(params.endpoint).toString(),
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-                [form.getAttribute("name")]: Object.fromEntries(formData),
-                "source": params.thisUrl.toString(),
-                "time": new Date().toISOString(),
-                "UTM": params.niceUtms,
-            })
-        };
-        return data;
-    }
-
-    function prepCounterData(counterName) {
-        const data = {
-            url: new URL(counterName, params.counterUrl).toString(),
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name: "default",
-                site: params.wfSiteId
-            })
-        }
-        return data;
-    };
 
     function formStatus(form, ok) {
         const parent = form.parentNode;
@@ -232,6 +120,7 @@ function ageraSync(form) {
         }
 
     }
+
 
     function redirect() {
         if (params.redirect) {
@@ -257,6 +146,8 @@ function ageraSync(form) {
             console.log("No redirect defined")
         };
     };
+
+
     async function ajaxCall(request) {
         try {
             const result = await $.ajax({
@@ -273,6 +164,8 @@ function ageraSync(form) {
             throw new Error(error);
         }
     };
+
+
     async function handleFetchRequests(requestList, form) {
         try {
             const promises = requestList.map(async (request) => {
@@ -318,28 +211,27 @@ function ageraSync(form) {
             // list with all request DATA:
             let requestList = []
 
-            const counterUpdate = form.dataset.counterUpdate;
+            const crms = {
+                webflow: "webFlow",
+                actionnetwork: "actionNetwork",
+                mailchimp: "mailChimp",
+                zapier: "zapier"
+            }
 
-            if (crm === "webflow") {
+            const counterUpdateName = form.dataset.counterUpdate;
+
+            if (crms.hasOwnProperty(crm) && params.endpoint) {
+                const method = crms[crm];
+                requestList.push(prepData[method](form));
+            } else {
+                console.log("no crm defined")
                 requestList.push(prepData.webFlow(form));
             }
-            if (crm === "actionnetwork" && params.endpoint) {
-                requestList.push(prepAnData(form));
-            }
-            if (crm === "mailchimp" && params.endpoint) {
-                requestList.push(prepMailChimpData(form));
-            }
-            if (crm === "zapier" && params.endpoint) {
-                requestList.push(prepZapierData(form));
-            }
-            if (counterUpdate && counterUpdate !== "default") {
-                requestList.push(prepData.counter(counterUpdate));
+            if (counterUpdateName && counterUpdateName !== "default") {
+                requestList.push(prepData.counter(counterUpdateName));
             }
             if (requestList.length > 0) {
                 await handleFetchRequests(requestList, form);
-            }
-            if (crm === "") {
-                console.log("no crm defined")
             }
         });
     };
