@@ -60,7 +60,10 @@ function ageraSync(form) {
         },
         counter(counterName) {
             prepData.data.url = new URL(counterName, params.counterUrl).toString();
-            prepData.data.body = JSON.stringify({ name: "default", site: params.wfSiteId })
+            prepData.data.body = JSON.stringify({
+                name: "default",
+                site: params.wfSiteId
+            })
             return prepData.data;
         },
         actionNetwork(form) {
