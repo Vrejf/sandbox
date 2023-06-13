@@ -1,4 +1,4 @@
-// agera-sync.0.0.3.js 23-06-13 17.50
+// agera-sync.0.0.3.js 23-06-13 18:05
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const params = {
@@ -17,7 +17,7 @@ function ageraSync(form) {
     params.submitText = (params.submitButton && params.submitButton.value) || ""
 
     const prepData = {
-        data: { url: params.endpoint, method: "POST", headers: { "Content-Type": "application/json" } },
+        baseData: { url: params.endpoint, method: "POST", headers: { "Content-Type": "application/json" } },
 
         webFlow(form) {
             console.log("preppar data för webflow")
@@ -32,22 +32,25 @@ function ageraSync(form) {
                 const fieldName = `fields[${pair[0]}]`;
                 uriBody.append(fieldName, pair[1]);
             }
-            prepData.data.url = params.wfUrl.href;
-            prepData.data.headers = { "Content-Type": "application/x-www-form-urlencoded" };
-            prepData.data.body = uriBody.toString();
-            console.log("data: ", prepData.data)
-            return prepData.data;
+            return {
+                ...prepData.baseData,
+                url: params.wfUrl.href,
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: uriBody.toString()
+            }
         },
         mailChimp(form) {
             console.log("preppar data för mailchimp")
             const formData = new FormData(form);
             const uriBody = new URLSearchParams(formData)
             uriBody.append("UTM", params.niceUtms)
-            prepData.data.url = params.endpoint.replace('post?', 'post-json?') + '&c=?';
-            prepData.data.headers = { "Content-Type": "application/x-www-form-urlencoded" }
-            prepData.data.dataType = "jsonp";
-            prepData.data.body = uriBody.toString();
-            return prepData.data;
+            return {
+                ...prepData.baseData,
+                url: params.endpoint.replace('post?', 'post-json?') + '&c=?';
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                dataType: "jsonp",
+                body: uriBody.toString()
+            }
         },
         zapier(form) {
             prepData.data.body = JSON.stringify({
@@ -59,12 +62,11 @@ function ageraSync(form) {
             return prepData.data;
         },
         counter(counterName) {
-            prepData.data.url = new URL(counterName, params.counterUrl).toString();
-            prepData.data.body = JSON.stringify({
-                name: "default",
-                site: params.wfSiteId
-            })
-            return prepData.data;
+            return {
+                ...prepData.baseData,
+                url: new URL(counterName, params.counterUrl.toString()),
+                body: JSON.stringify({ name: "default", site: params.wfSiteId })
+            }
         },
         actionNetwork(form) {
             const formData = new FormData(form);
