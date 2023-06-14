@@ -1,6 +1,6 @@
-// Counter 0.1.6 230614 - 11.20
+// Counter 0.1.6 230614 - 11.55
 function ageraCounter() {
-    const apiUrl = "https://utils-api-git-experimental-vrejf.vercel.app/api/counter/"
+    const apiUrl = "https://utils-api-git-experimental-vrejf.vercel.app/api/counter/" // beta version
 
     function calcPercent(current, target) {
         if (current >= target) { return 100; }
@@ -67,33 +67,11 @@ function ageraCounter() {
         }
     }
 
-    // TODO combine updateTargetValue and updateCounterValue and test locale fallback!
-
-    function updateCounterValue(element, value, options) {
-        try {
-            const localeNotation = new Intl.NumberFormat(options.locale, options.compactDisplay).format(value);
-            element.textContent = localeNotation;
-        }
-        catch {
-            const localeNotation = new Intl.NumberFormat(options.compactDisplay).format(value);
-            element.textContent = localeNotation;
-        }
-    }
 
     function updateLimiterWidth(element, value, target) {
         element.style.width = calcPercent(value, target) + '%';
     }
 
-    function updateTargetValue(element, target, options) {
-        try {
-            const localeNotation = new Intl.NumberFormat(options.locale, options.compactDisplay).format(target);
-            element.textContent = localeNotation;
-        } catch {
-            options.compactDisplay.useGrouping = false;
-            const localeNotation = new Intl.NumberFormat(undefined, options.compactDisplay).format(target);
-            element.textContent = localeNotation;
-        }
-    }
     function updateElementValue(element, value, options) {
         try {
             const localeNotation = new Intl.NumberFormat(options.locale, options.compactDisplay).format(value);
@@ -124,6 +102,8 @@ function ageraCounter() {
                 notation: element.dataset.counterCompact === undefined ? "standard" : "compact",
             },
         }
+
+        // get value from backend:
         let currentValue;
         if (counterName.toLowerCase() === "default") {
             currentValue = 125;
@@ -131,7 +111,7 @@ function ageraCounter() {
             currentValue = await fetchCounter(counterName);
         }
 
-        // Current element is counter value:
+        // the selected element is also the current value:
         if (element.classList.contains('counter-current-value')) {
             updateElementValue(element, currentValue, options);
             showElement(element, currentValue, options);
@@ -170,7 +150,7 @@ function ageraCounter() {
 }
 
 
-{ // Run on before DOM load:
+{ // Run before DOM load:
     const hideCss = `
     .counter-target-value,
     .counter-current-value,
