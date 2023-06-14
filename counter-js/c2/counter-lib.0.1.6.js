@@ -1,4 +1,4 @@
-// Counter 0.1.6 230613 - 19-50
+// Counter 0.1.6 230614 - 11.20
 function ageraCounter() {
     const apiUrl = "https://utils-api-git-experimental-vrejf.vercel.app/api/counter/"
 
@@ -67,13 +67,15 @@ function ageraCounter() {
         }
     }
 
+    // TODO combine updateTargetValue and updateCounterValue and test locale fallback!
+
     function updateCounterValue(element, value, options) {
         try {
-            localeNotation = new Intl.NumberFormat(options.locale, options.compactDisplay).format(value);
+            const localeNotation = new Intl.NumberFormat(options.locale, options.compactDisplay).format(value);
             element.textContent = localeNotation;
         }
         catch {
-            localeNotation = new Intl.NumberFormat(options.compactDisplay).format(value);
+            const localeNotation = new Intl.NumberFormat(options.compactDisplay).format(value);
             element.textContent = localeNotation;
         }
     }
@@ -89,6 +91,16 @@ function ageraCounter() {
         } catch {
             options.compactDisplay.useGrouping = false;
             const localeNotation = new Intl.NumberFormat(undefined, options.compactDisplay).format(target);
+            element.textContent = localeNotation;
+        }
+    }
+    function updateElementValue(element, value, options) {
+        try {
+            const localeNotation = new Intl.NumberFormat(options.locale, options.compactDisplay).format(value);
+            element.textContent = localeNotation;
+        } catch {
+            options.compactDisplay.useGrouping = false;
+            const localeNotation = new Intl.NumberFormat(undefined, options.compactDisplay).format(value);
             element.textContent = localeNotation;
         }
     }
@@ -121,7 +133,7 @@ function ageraCounter() {
 
         // Current element is counter value:
         if (element.classList.contains('counter-current-value')) {
-            updateCounterValue(element, currentValue, options);
+            updateElementValue(element, currentValue, options);
             showElement(element, currentValue, options);
         } else {
             // Update all the CURRENT VALUES:
@@ -129,7 +141,7 @@ function ageraCounter() {
                 '.counter-current-value'
             );
             for (let currentValueElement of currentValueElements) {
-                updateCounterValue(currentValueElement, currentValue, options);
+                updateElementValue(currentValueElement, currentValue, options);
                 showElement(currentValueElement, currentValue, options)
             }
         }
@@ -139,7 +151,7 @@ function ageraCounter() {
         const targetValue = setTarget(currentValue, options);
         const targetValuesElement = element.querySelectorAll('.counter-target-value');
         for (let targetValueElement of targetValuesElement) {
-            updateTargetValue(targetValueElement, targetValue, options)
+            updateElementValue(targetValueElement, targetValue, options)
             showElement(targetValueElement, currentValue, options)
         }
 
@@ -158,7 +170,8 @@ function ageraCounter() {
 }
 
 
-const hideCss = `
+{ // Run on before DOM load:
+    const hideCss = `
     .counter-target-value,
     .counter-current-value,
     .container_counter {
@@ -167,11 +180,12 @@ const hideCss = `
     }
 `;
 
-const styleTag = document.createElement('style');
-styleTag.textContent = hideCss;
-document.head.appendChild(styleTag);
+    const styleTag = document.createElement('style');
+    styleTag.textContent = hideCss;
+    document.head.appendChild(styleTag);
+}
 
-// Usage
+// Run after DOM load:
 document.addEventListener('DOMContentLoaded', function () {
     const counterElements = document.querySelectorAll('[data-counter-name]');
     const counter = ageraCounter();
