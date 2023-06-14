@@ -176,7 +176,7 @@ function ageraCounter() {
     .counter-current-value,
     .container_counter {
         opacity: 0;
-        transition: opacity 1s;
+        transition: opacity 0.7s;
     }
 `;
 
