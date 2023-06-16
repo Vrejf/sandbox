@@ -102,14 +102,12 @@ function listCounters() {
 };
 // update counter
 function listUpdateCounter(item) {
-    const decodedItemString = decodeURIComponent(item); // Decode the encoded JSON string
-    const data = JSON.parse(decodedItemString)
+    const data = JSON.parse(decodeURIComponent(item)) // decode from URI
 
-    const main = listCounters();
     data.newValue = document.getElementById(`new-${data.id}`).value;
-    console.log("update counter ", data);
     console.log("update", data.name, "new value: ", data.newValue)
     document.getElementById(`counter-${data.id}`).innerText = data.newValue;
+    const main = listCounters();
     main.makeUpdateFetch(data, data.newValue);
 }
 
