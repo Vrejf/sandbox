@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Stacked Line Chart with Chart.js</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="
+https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js
+"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-deferred@2"></script>
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+
+        .chart-wrap {
+            min-height: 20em;
+            /* width: 200px; 
+            background-color: lightblue;
+            height: auto;
+            
+            max-height: 40em;
+            max-width: 50em;*/
+        }
+    </style>
+</head>
+
+<body>
+    <div style="height: 1000px;"><b>asdaaas</b></div>
+
+    <div class="chart-wrap"><canvas id="myChart1"></canvas></div>
+    <div><canvas id="myChart2"></canvas></div>
+
+    <script>
+
+        Chart.defaults.font.size = 12;
+        Chart.defaults.font.family = 'Helvetica';
+        Chart.defaults.font.weight = 'bold';
+        //Chart.defaults.animation.duration = 1000;
+        Chart.register(ChartDeferred);
+        Chart.defaults.plugins.deferred.yOffset = 200;
+        const chartProperties = {
+            fill: true,
+            borderWidth: 1,
+            tension: .2,
+        };
+
+        window.addEventListener("load", (event) => {
+            // target canvas ID:
+            chartName = "myChart1";
+            // data:
+            const csvData = `Label,color,2020,2021,2022,2023,2024,2025,2026,2027,2028,2029,2030,2031,2032,2033,2034,2035,2036,2037,2038,2039,2040,2041,2042,2043,2044,2045,2046,2047,2048,2049,2050
+Bostäder,#ef8933,34162,37831,33900,34084,35165,35988,35971,35955,35931,35930,35906,35982,35985,35967,35947,35928,35919,35901,35885,35871,35950,35854,35850,35851,35854,35859,35865,35872,35878,35884,35888
+Industri,#4eac6f,51036,52014,50155,53092,56940,66775,89424,97511,110167,116355,142581,146927,152114,155894,167026,174514,178461,182424,186308,190215,194138,198066,202033,206023,209734,213905,216477,219068,221683,224324,226991
+Jordbruk,#d33943,2628,2903,2790,2783,2776,2771,2765,2760,2754,2749,2743,2737,2731,2723,2715,2707,2700,2692,2685,2678,2676,2664,2658,2653,2647,2642,2638,2633,2629,2624,2619
+Service,#439ccf,38379,40202,37552,37561,37946,39548,40770,41621,41624,41648,41655,41648,41656,41613,41569,41523,41515,41468,41420,41373,41630,41283,41239,41197,41154,41112,41069,41026,40981,40934,40884
+Transport,#f8d147,2961,3212,3583,4063,4667,5415,6254,7197,8218,9307,10470,11679,12889,14065,15193,16262,17239,18095,18838,19471,20131,20472,20875,21233,21566,21882,22174,22451,22704,22941,23161
+Överföringsförluster,#ef97a7,10333,10893,10238,10527,11000,12040,14015,14803,15896,16479,18668,19118,19630,20021,20996,21675,22067,22446,22811,23169,23562,23867,24212,24556,24876,25232,25458,25684,25910,26137,26363`;
+
+
+            const parsedData = Papa.parse(csvData, { header: true });
+
+            // Generate labels from header
+            const labels = Object.keys(parsedData.data[0]).filter(key => key !== "Label" && key !== "color");
+            const datasets = parsedData.data.map(row => {
+                return {
+                    label: row.Label,
+                    data: labels.map(label => row[label]),
+                    borderColor: row.color,
+                    backgroundColor: row.color,
+                    ...chartProperties,
+                };
+            });
+            const myChart = new Chart(document.getElementById(chartName), {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: datasets,
+                },
+                options: {
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            grid: {
+                                display: true,
+                                lineWidth: .5
+                            },
+                        },
+                        y: {
+                            stacked: true,
+                            grid: {
+                                lineWidth: .5
+                            },
+                            beginAtZero: true,
+                        }
+                    },
+                    interaction: {
+                        intersect: false,
+                        mode: "nearest",
+                        axis: "x",
+                    },
+                    plugins: {
+                        legend: {
+                            position: "bottom",
+                            align: "middle",
+                            display: false,
+                        }
+                    }
+                }
+            });
+        });
+
+
+
+        window.addEventListener("load", (event) => {
+            // target canvas ID:
+            chartName = "myChart2";
+
+            // Parse data
+            const csvUrl = "https://cdn.jsdelivr.net/gh/Vrejf/js-tools@main/values.csv"
+            //const csvUrl = "https://raw.githubusercontent.com/Vrejf/js-tools/main/values.csv"
+            const parsedData = Papa.parse(csvUrl, {
+                download: true,
+                header: true,
+                complete: function (results) {
+                    const labels = Object.keys(results.data[0]).filter(key => key !== "Label" && key !== "color");
+                    const datasets = results.data.map(row => {
+                        return {
+                            label: row.Label,
+                            data: labels.map(label => row[label]),
+                            borderColor: row.color,
+                            backgroundColor: row.color,
+                            ...chartProperties,
+                        };
+                    });
+                    // Render chart
+                    const myChart = new Chart(document.getElementById(chartName), {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: datasets,
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            scales: {
+                                x: {
+                                    grid: {
+                                        display: true,
+                                        lineWidth: .5
+                                    },
+                                },
+                                y: {
+                                    stacked: true,
+                                    grid: {
+                                        lineWidth: .5
+                                    },
+                                    beginAtZero: true,
+                                }
+                            },
+                            interaction: {
+                                intersect: false,
+                                mode: "nearest",
+                                axis: "x",
+                            },
+                            plugins: {
+                                legend: {
+                                    position: "bottom",
+                                    align: "end",
+                                    display: true,
+                                }
+                            }
+                        }
+                    });
+    </script>
+</body>
+
+</html>
