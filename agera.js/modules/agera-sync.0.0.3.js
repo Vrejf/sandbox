@@ -1,4 +1,4 @@
-// agera-sync.0.0.3.js 23-06-13 19:26
+// agera-sync.0.0.3.js 23-06-22 11:55
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const params = {
@@ -219,7 +219,7 @@ function ageraSync(form) {
 
             const counterUpdateName = form.dataset.counterUpdate;
 
-            if (crms.hasOwnProperty(crm) && params.endpoint) {
+            if (crms.hasOwnProperty(crm)) {
                 const method = crms[crm];
                 requestList.push(prepData[method](form));
             } else {

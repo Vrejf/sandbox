@@ -4,7 +4,7 @@
 /***/ 293:
 /***/ (() => {
 
-// agera-sync.0.0.3.js 23-06-13 19:26
+// agera-sync.0.0.3.js 23-06-22 11:55
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const params = {
@@ -225,7 +225,7 @@ function ageraSync(form) {
 
             const counterUpdateName = form.dataset.counterUpdate;
 
-            if (crms.hasOwnProperty(crm) && params.endpoint) {
+            if (crms.hasOwnProperty(crm)) {
                 const method = crms[crm];
                 requestList.push(prepData[method](form));
             } else {
@@ -458,16 +458,8 @@ function ageraCounter() {
 
         });
 
-        // Update urls
+        // Add UTM to multiple submits, for survey forms
         const utmParams = new URLSearchParams(window.location.search).toString();
-        const existingRedirectUrl = form.getAttribute('redirect');
-        if (existingRedirectUrl) {
-            const updatedRedirectUrl = existingRedirectUrl + (existingRedirectUrl.includes('?') ? '&' : '?') + utmParams.toString();
-            form.setAttribute('redirect', updatedRedirectUrl);
-            form.setAttribute('data-redirect', updatedRedirectUrl);
-        };
-
-        // Forward UTM to multiple submits, for special survey forms
         const submitElements = form.querySelectorAll('input[data-redirect]');
 
         submitElements.forEach((submitElement) => {
@@ -604,10 +596,6 @@ var __webpack_exports__ = {};
 
 
 
-// Print imported modules to console:
-console.log("agera-sync.0.0.3.js")
-console.log("counter-lib.0.1.6.js")
-console.log("multistep-forward.0.4.js")
 
 })();
 

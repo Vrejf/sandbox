@@ -10,16 +10,8 @@
 
         });
 
-        // Update urls
+        // Add UTM to multiple submits, for survey forms
         const utmParams = new URLSearchParams(window.location.search).toString();
-        const existingRedirectUrl = form.getAttribute('redirect');
-        if (existingRedirectUrl) {
-            const updatedRedirectUrl = existingRedirectUrl + (existingRedirectUrl.includes('?') ? '&' : '?') + utmParams.toString();
-            form.setAttribute('redirect', updatedRedirectUrl);
-            form.setAttribute('data-redirect', updatedRedirectUrl);
-        };
-
-        // Forward UTM to multiple submits, for special survey forms
         const submitElements = form.querySelectorAll('input[data-redirect]');
 
         submitElements.forEach((submitElement) => {
