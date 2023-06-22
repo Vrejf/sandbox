@@ -4,7 +4,7 @@
 /***/ 293:
 /***/ (() => {
 
-// agera-sync.0.0.3.js 23-06-22 11:55
+// agera-sync.0.0.3.js 23-06-22 11:05
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
 function ageraSync(form) {
     const params = {
@@ -446,7 +446,7 @@ function ageraCounter() {
 /***/ 868:
 /***/ (() => {
 
-// multistep-forward.0.4.js 23-06-22 10.31
+// multistep-forward.0.4.js 23-06-22 11.00
 // data attributes: data-load-forward, data-form-forward
 {
     function receive(form, entries) {
