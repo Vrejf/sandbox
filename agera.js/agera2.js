@@ -1,11 +1,12 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ 293:
+/***/ 598:
 /***/ (() => {
 
-// agera-sync.0.0.3.js 23-06-22 11:05
+// agera-sync.0.0.4.js 23-06-22 13:30
 // Data attributes: data-crm, data-redirect-utm, data-counter-update
+// changed to first_name and last_name
 function ageraSync(form) {
     const params = {
         thisUrl: new URL(window.location.href),
@@ -82,8 +83,8 @@ function ageraSync(form) {
                 body:
                     JSON.stringify({
                         person: {
-                            given_name: formData.get("first"),
-                            family_name: formData.get("last"),
+                            given_name: formData.get("first_name"),
+                            family_name: formData.get("last_name"),
                             email_addresses: [
                                 { address: formData.get("email_address") }
                             ],
@@ -588,8 +589,8 @@ var __webpack_exports__ = {};
 // This entry need to be wrapped in an IIFE because it need to be in strict mode.
 (() => {
 "use strict";
-/* harmony import */ var _modules_agera_sync_0_0_3_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(293);
-/* harmony import */ var _modules_agera_sync_0_0_3_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_modules_agera_sync_0_0_3_js__WEBPACK_IMPORTED_MODULE_0__);
+/* harmony import */ var _modules_agera_sync_0_0_4_js__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(598);
+/* harmony import */ var _modules_agera_sync_0_0_4_js__WEBPACK_IMPORTED_MODULE_0___default = /*#__PURE__*/__webpack_require__.n(_modules_agera_sync_0_0_4_js__WEBPACK_IMPORTED_MODULE_0__);
 /* harmony import */ var _modules_counter_lib_0_1_6_js__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(555);
 /* harmony import */ var _modules_counter_lib_0_1_6_js__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_modules_counter_lib_0_1_6_js__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _modules_multistep_forward_0_4_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(868);
