@@ -1,5 +1,5 @@
-// multistep-forward.0.4.js 23-06-22 11.00
-// data attributes: data-load-forward, data-form-forward
+// multistep-forward.0.4.js 23-06-22 11.19
+// data attributes: data-crm, data-load-petition="true"
 {
     function receive(form, entries) {
         // create hidden fields
@@ -52,8 +52,9 @@
 
     // when DOM is loaded:
     document.addEventListener("DOMContentLoaded", function () {
-        const forwardForms = document.querySelectorAll('[data-form-forward="true"]');
-        const loadForms = document.querySelectorAll('[data-load-forward="true"]');
+        // const forwardForms = document.querySelectorAll('[data-form-forward="true"]');
+        const forwardForms = document.querySelectorAll("[data-crm]");
+        const loadForms = document.querySelectorAll('[data-load-petition="true"]');
 
         // Forward and save to localStorage:
         if (forwardForms.length > 0) {
