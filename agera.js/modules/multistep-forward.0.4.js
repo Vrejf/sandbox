@@ -1,4 +1,5 @@
-// multistep-forward.0.4.js 23-06-22 10.22
+// multistep-forward.0.4.js 23-06-22 10.31
+// data attributes: data-load-forward, data-form-forward
 {
     function receive(form, entries) {
         // create hidden fields
@@ -73,7 +74,7 @@
         // Load from localStorage:
         if (loadForms.length > 0 && localStorage !== null) {
             loadForms.forEach(function (form) {
-                console.log("Load data for this form: " + form.getAttribute("id"));
+                console.log("Load data to this form: " + form.getAttribute("id"));
                 const savedInputs = JSON.parse(localStorage.getItem("multistepforward"));
 
                 receive(form, Object.entries(savedInputs));
