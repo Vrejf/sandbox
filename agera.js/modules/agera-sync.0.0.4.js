@@ -11,10 +11,11 @@ function ageraSync(form) {
             "https://webflow.com/api/v1/form/"
         ),
         counterUrl: "https://utils-api-git-experimental-vrejf.vercel.app/api/counter/",
-        niceUtms: Array.from(
-            new URLSearchParams(window.location.search),
-            ([key, value]) => `${key}: ${value}`
-        ),
+        niceUtms:
+            Array.from(
+                new URLSearchParams(window.location.search),
+                ([key, value]) => `${key}: ${value}`
+            ) || "",
         redirect: form.getAttribute("redirect") || false,
         endpoint: form.getAttribute("action")
             ? new URL(form.getAttribute("action")).toString()
