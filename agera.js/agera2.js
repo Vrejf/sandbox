@@ -33,6 +33,19 @@ function ageraSync(form) {
     };
     params.submitText = (params.submitButton && params.submitButton.value) || "";
 
+    function remapFormData(form, keyMapping) {
+        var remappedFormData = new FormData();
+
+        for (var [key, value] of new FormData(form)) {
+            if (keyMapping.hasOwnProperty(key)) {
+                remappedFormData.append(keyMapping[key], value);
+            } else {
+                remappedFormData.append(key, value);
+            }
+        }
+        return remappedFormData;
+    }
+
     const prepData = {
         baseData: {
             url: params.endpoint,
@@ -63,7 +76,18 @@ function ageraSync(form) {
         },
         mailChimp(form) {
             console.log("preppar data för mailchimp");
-            const formData = new FormData(form);
+            const keyMapping = {
+                given_name: "FNAME",
+                family_name: "LNAME",
+                email: "EMAIL",
+                tel: "PHONE",
+                street_adress: "ADDRESS",
+                postal_code: "POSTALCODE",
+                adress_level2: "REGION",
+                country: "COUNTRY",
+            };
+            const formData = remapFormData(form, keyMapping);
+            // const formData = new FormData(form);
             const uriBody = new URLSearchParams(formData);
             uriBody.append("UTM", params.niceUtms);
             return {
