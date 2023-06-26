@@ -1,0 +1,12 @@
+{
+  "name": "phone",
+  "version": "1.0.0",
+  "description": "",
+  "main": "phone1.js",
+  "scripts": {
+    "test": "test",
+    "build": "webpack"
+  },
+  "author": "",
+  "license": "ISC"
+}

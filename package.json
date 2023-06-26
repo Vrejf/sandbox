@@ -23,6 +23,10 @@
   },
   "homepage": "https://github.com/codesandbox-app/static-template#readme",
   "devDependencies": {
-    "serve": "^11.2.0"
+    "serve": "^11.2.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "dependencies": {
+    "libphonenumber-js": "^1.10.36"
   }
 }

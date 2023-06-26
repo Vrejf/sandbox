@@ -4,9 +4,10 @@
 /***/ 598:
 /***/ (() => {
 
-// agera-sync.0.0.4.js 23-06-22 13:30
-// Data attributes: data-crm, data-redirect-utm, data-counter-update
-// changed to first_name and last_name
+// agera-sync.0.0.4.js 23-06-26 12:30
+// Data attributes: data-crm, data-redirect-utm, data-counter-update, 
+// data-action-id, data-sign-method
+
 function ageraSync(form) {
     const params = {
         thisUrl: new URL(window.location.href),
@@ -27,7 +28,6 @@ function ageraSync(form) {
         baseData: { url: params.endpoint, method: "POST", headers: { "Content-Type": "application/json" } },
 
         webFlow(form) {
-            console.log("preppar data för webflow")
             const formData = new FormData(form)
             formData.append("UTM", params.niceUtms)
             const uriBody = new URLSearchParams({
@@ -69,6 +69,20 @@ function ageraSync(form) {
                 })
             }
         },
+
+        /// AMNESTY
+        amnesty(form) {
+            return {
+                ...prepData.baseData, body: JSON.stringify({
+                    ...Object.fromEntries(new FormData(form)),
+                    "source": params.thisUrl.hostname + params.thisUrl.pathname,
+                    "time": new Date().toISOString(),
+                    "UTM": params.niceUtms,
+                    "action_id": form.dataset.actionId,
+                    "sign_method": form.dataset.sign_method
+                })
+            }
+        },
         counter(counterName) {
             return {
                 ...prepData.baseData,
@@ -83,19 +97,19 @@ function ageraSync(form) {
                 body:
                     JSON.stringify({
                         person: {
-                            given_name: formData.get("first_name"),
-                            family_name: formData.get("last_name"),
+                            given_name: formData.get("given-name"),
+                            family_name: formData.get("family-name"),
                             email_addresses: [
-                                { address: formData.get("email_address") }
+                                { address: formData.get("email") }
                             ],
                             phone_numbers: [
-                                { number: formData.get("phone_number") || "" }
+                                { number: formData.get("tel") || "" }
                             ],
                             postal_addresses: [
                                 {
-                                    postal_code: formData.get("postal_code") || "",
-                                    address_lines: formData.get("address") || "",
-                                    region: formData.get("region") || "",
+                                    postal_code: formData.get("postal-code") || "",
+                                    address_lines: formData.get("street-address") || "",
+                                    region: formData.get("adress-level2") || "",
                                     country: formData.get("country") || ""
                                 }
                             ]
@@ -221,7 +235,8 @@ function ageraSync(form) {
                 webflow: "webFlow",
                 actionnetwork: "actionNetwork",
                 mailchimp: "mailChimp",
-                zapier: "zapier"
+                zapier: "zapier",
+                amnesty: "amnesty"
             }
 
             const counterUpdateName = form.dataset.counterUpdate;
@@ -260,9 +275,10 @@ document.addEventListener('DOMContentLoaded', function () {
 /***/ 555:
 /***/ (() => {
 
-// Counter 0.1.6 230614 - 11.55
+// Counter 0.1.6 230626 - 13.30
 // data attributes: data-counter-name, 
 // data-counter-target=0, data-counter-hide-below=0, data-counter-auto-target=true, data-counter-locale="none"/"sv-SE", data-counter-compact="compact"
+// css: .counter-target-value, .counter-current-value, .counter_container
 
 
 function ageraCounter() {
@@ -421,7 +437,7 @@ function ageraCounter() {
         const hideCss = `
         .counter-target-value,
         .counter-current-value,
-        .container_counter {
+        .counter_container {
             opacity: 0;
             transition: opacity 0.7s;
         }

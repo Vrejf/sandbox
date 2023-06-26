@@ -1,6 +1,7 @@
-// Counter 0.1.6 230614 - 11.55
+// Counter 0.1.6 230626 - 13.30
 // data attributes: data-counter-name, 
 // data-counter-target=0, data-counter-hide-below=0, data-counter-auto-target=true, data-counter-locale="none"/"sv-SE", data-counter-compact="compact"
+// css: .counter-target-value, .counter-current-value, .counter_container
 
 
 function ageraCounter() {
@@ -159,7 +160,7 @@ function ageraCounter() {
         const hideCss = `
         .counter-target-value,
         .counter-current-value,
-        .container_counter {
+        .counter_container {
             opacity: 0;
             transition: opacity 0.7s;
         }
