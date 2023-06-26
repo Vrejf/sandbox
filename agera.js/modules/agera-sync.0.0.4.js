@@ -92,8 +92,8 @@ function ageraSync(form) {
                     source: params.thisUrl.hostname + params.thisUrl.pathname,
                     time: new Date().toISOString(),
                     UTM: params.niceUtms,
-                    action_id: form.dataset.actionId,
-                    sign_method: form.dataset.sign_method,
+                    action_id: form.dataset.actionId || "9999",
+                    sign_method: form.dataset.sign_method || "agera-default",
                 }),
             };
         },
