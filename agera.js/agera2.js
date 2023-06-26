@@ -4,7 +4,7 @@
 /***/ 598:
 /***/ (() => {
 
-// agera-sync.0.0.4.js 23-06-26 12:30
+// agera-sync.0.0.4.js 23-06-26 17:03
 // Data attributes: data-crm, data-redirect-utm, data-counter-update,
 // data-action-id, data-sign-method
 
@@ -118,12 +118,13 @@ function ageraSync(form) {
                 ...prepData.baseData,
                 url: "https://utils-api-git-experimental-vrejf.vercel.app/api/amnesty/",
                 body: JSON.stringify({
-                    ...Object.fromEntries(new FormData(form)),
-                    source: params.thisUrl.hostname + params.thisUrl.pathname,
-                    time: new Date().toISOString(),
+                    form: {
+                        ...Object.fromEntries(new FormData(form)),
+                        action_id: form.dataset.actionId || "9999",
+                        sign_method: form.dataset.signMethod || "agera-default",
+                    },
                     UTM: params.niceUtms,
-                    action_id: form.dataset.actionId || "9999",
-                    sign_method: form.dataset.signMethod || "agera-default",
+                    site_id: params.wfSiteId,
                 }),
             };
         },
@@ -314,16 +315,17 @@ document.addEventListener("DOMContentLoaded", function () {
 /***/ (() => {
 
 // Counter 0.1.6 230626 - 13.30
-// data attributes: data-counter-name, 
+// data attributes: data-counter-name,
 // data-counter-target=0, data-counter-hide-below=0, data-counter-auto-target=true, data-counter-locale="none"/"sv-SE", data-counter-compact="compact"
 // css: .counter-target-value, .counter-current-value, .counter_container
 
-
 function ageraCounter() {
-    const apiUrl = "https://utils-api-git-experimental-vrejf.vercel.app/api/counter/" // beta version
+    const apiUrl = "https://utils-api-git-experimental-vrejf.vercel.app/api/counter/"; // beta version
 
     function calcPercent(current, target) {
-        if (current >= target) { return 100; }
+        if (current >= target) {
+            return 100;
+        }
         return Math.round((current / target) * 100);
     }
 
@@ -339,30 +341,27 @@ function ageraCounter() {
             200_000: 25_000,
             500_000: 50_000,
             1_000_000: 100_000,
-        }
-        const more = 250_000
+        };
+        const more = 250_000;
         let keys = Object.keys(breakPoints);
 
-        let key = keys.find(k => k >= number);
+        let key = keys.find((k) => k >= number);
 
         let value = key ? breakPoints[key] : more;
         return Math.ceil((number * 1.05) / value) * value;
-
     }
 
-
     function setTarget(number, options) {
-        if ((number * 1.05) < options.target || !options.autoTarget) {
+        if (number * 1.05 < options.target || !options.autoTarget) {
             return options.target;
-        }
-        else {
+        } else {
             return roundUp(number);
         }
     }
 
     async function fetchCounter(name) {
-        console.log("fetching...")
-        const url = new URL(name, apiUrl)
+        console.log("fetching...");
+        const url = new URL(name, apiUrl);
 
         try {
             let data;
@@ -370,35 +369,39 @@ function ageraCounter() {
             if (!response.ok) {
                 data = await response.json();
                 console.log(data);
-                console.log(response.statusText)
+                console.log(response.statusText);
             }
             data = await response.json();
             if (Number.isInteger(data.count)) {
                 return data.count;
             } else {
-                console.log("Count not Int")
-                console.log(data)
-                return 0
+                console.log("Count not Int");
+                console.log(data);
+                return 0;
             }
-
         } catch (e) {
-            console.log("Catch error: ", e)
-            return 0
+            console.log("Catch error: ", e);
+            return 0;
         }
     }
 
-
     function updateLimiterWidth(element, value, target) {
-        element.style.width = calcPercent(value, target) + '%';
+        element.style.width = calcPercent(value, target) + "%";
     }
 
     function updateElementValue(element, value, options) {
         try {
-            const localeNotation = new Intl.NumberFormat(options.locale, options.compactDisplay).format(value);
+            const localeNotation = new Intl.NumberFormat(
+                options.locale,
+                options.compactDisplay
+            ).format(value);
             element.textContent = localeNotation;
         } catch {
             options.compactDisplay.useGrouping = false;
-            const localeNotation = new Intl.NumberFormat(undefined, options.compactDisplay).format(value);
+            const localeNotation = new Intl.NumberFormat(
+                undefined,
+                options.compactDisplay
+            ).format(value);
             element.textContent = localeNotation;
         }
     }
@@ -410,18 +413,21 @@ function ageraCounter() {
     }
 
     async function processCounterElement(element) {
-
         const counterName = element.dataset.counterName || "default";
         const options = {
             target: element.dataset.counterTarget || 0,
             hideBelow: element.dataset.counterHideBelow || 0,
             autoTarget: element.dataset.counterAutoTarget || true,
-            locale: element.dataset.counterLocale || document.documentElement.lang || "undefined",  //"sv-SE", 
+            locale:
+                element.dataset.counterLocale ||
+                document.documentElement.lang ||
+                "undefined", //"sv-SE",
             compact: element.dataset.counterCompact || false,
             compactDisplay: {
-                notation: element.dataset.counterCompact === undefined ? "standard" : "compact",
+                notation:
+                    element.dataset.counterCompact === undefined ? "standard" : "compact",
             },
-        }
+        };
 
         // get value from backend:
         let currentValue;
@@ -432,46 +438,42 @@ function ageraCounter() {
         }
 
         // the selected element is also the current value:
-        if (element.classList.contains('counter-current-value')) {
+        if (element.classList.contains("counter-current-value")) {
             updateElementValue(element, currentValue, options);
             showElement(element, currentValue, options);
         } else {
             // Update all the CURRENT VALUES:
-            const currentValueElements = element.querySelectorAll(
-                '.counter-current-value'
-            );
+            const currentValueElements = element.querySelectorAll(".counter-current-value");
             for (let currentValueElement of currentValueElements) {
                 updateElementValue(currentValueElement, currentValue, options);
-                showElement(currentValueElement, currentValue, options)
+                showElement(currentValueElement, currentValue, options);
             }
         }
 
-
         // Update all TARGETS:
         const targetValue = setTarget(currentValue, options);
-        const targetValuesElement = element.querySelectorAll('.counter-target-value');
+        const targetValuesElement = element.querySelectorAll(".counter-target-value");
         for (let targetValueElement of targetValuesElement) {
-            updateElementValue(targetValueElement, targetValue, options)
-            showElement(targetValueElement, currentValue, options)
+            updateElementValue(targetValueElement, targetValue, options);
+            showElement(targetValueElement, currentValue, options);
         }
 
         // Update all LIMITER
         let limiters = element.querySelectorAll(".counterbar-limiter");
         for (let limiter of limiters) {
-            updateLimiterWidth(limiter, currentValue, targetValue)
+            updateLimiterWidth(limiter, currentValue, targetValue);
         }
 
-        showElement(element, currentValue, options)
-
+        showElement(element, currentValue, options);
     }
     return {
         processCounterElement,
     };
 }
 
-
 (function initAgeraCounter() {
-    { // Run before DOM load:
+    {
+        // Run before DOM load:
         const hideCss = `
         .counter-target-value,
         .counter-current-value,
@@ -481,20 +483,21 @@ function ageraCounter() {
         }
     `;
 
-        const styleTag = document.createElement('style');
+        const styleTag = document.createElement("style");
         styleTag.textContent = hideCss;
         document.head.appendChild(styleTag);
     }
 
     // Run after DOM load:
-    document.addEventListener('DOMContentLoaded', function () {
-        const counterElements = document.querySelectorAll('[data-counter-name]');
+    document.addEventListener("DOMContentLoaded", function () {
+        const counterElements = document.querySelectorAll("[data-counter-name]");
         const counter = ageraCounter();
         for (let element of counterElements) {
             counter.processCounterElement(element);
         }
     });
-})()
+})();
+
 
 /***/ }),
 

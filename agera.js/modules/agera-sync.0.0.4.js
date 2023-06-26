@@ -1,4 +1,4 @@
-// agera-sync.0.0.4.js 23-06-26 12:30
+// agera-sync.0.0.4.js 23-06-26 17:03
 // Data attributes: data-crm, data-redirect-utm, data-counter-update,
 // data-action-id, data-sign-method
 
@@ -112,12 +112,13 @@ function ageraSync(form) {
                 ...prepData.baseData,
                 url: "https://utils-api-git-experimental-vrejf.vercel.app/api/amnesty/",
                 body: JSON.stringify({
-                    ...Object.fromEntries(new FormData(form)),
-                    source: params.thisUrl.hostname + params.thisUrl.pathname,
-                    time: new Date().toISOString(),
+                    form: {
+                        ...Object.fromEntries(new FormData(form)),
+                        action_id: form.dataset.actionId || "9999",
+                        sign_method: form.dataset.signMethod || "agera-default",
+                    },
                     UTM: params.niceUtms,
-                    action_id: form.dataset.actionId || "9999",
-                    sign_method: form.dataset.signMethod || "agera-default",
+                    site_id: params.wfSiteId,
                 }),
             };
         },
