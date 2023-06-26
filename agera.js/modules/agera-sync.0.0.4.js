@@ -10,8 +10,7 @@ function ageraSync(form) {
             document.querySelector("html").dataset.wfSite,
             "https://webflow.com/api/v1/form/"
         ),
-        counterUrl:
-            "https://utils-api-git-experimental-vrejf.vercel.app/api/counter/",
+        counterUrl: "https://utils-api-git-experimental-vrejf.vercel.app/api/counter/",
         niceUtms: Array.from(
             new URLSearchParams(window.location.search),
             ([key, value]) => `${key}: ${value}`
@@ -26,8 +25,7 @@ function ageraSync(form) {
             new URLSearchParams(window.location.search).get("source"),
         submitButton: form.querySelector('input[type="submit"]') || undefined,
     };
-    params.submitText =
-        (params.submitButton && params.submitButton.value) || "";
+    params.submitText = (params.submitButton && params.submitButton.value) || "";
 
     const prepData = {
         baseData: {
@@ -76,9 +74,7 @@ function ageraSync(form) {
             return {
                 ...prepData.baseData,
                 body: JSON.stringify({
-                    [form.getAttribute("name")]: Object.fromEntries(
-                        new FormData(form)
-                    ),
+                    [form.getAttribute("name")]: Object.fromEntries(new FormData(form)),
                     source: params.thisUrl.hostname + params.thisUrl.pathname,
                     time: new Date().toISOString(),
                     UTM: params.niceUtms,
@@ -90,6 +86,7 @@ function ageraSync(form) {
         amnesty(form) {
             return {
                 ...prepData.baseData,
+                url: "https://utils-api-git-experimental-vrejf.vercel.app/api/amnesty/",
                 body: JSON.stringify({
                     ...Object.fromEntries(new FormData(form)),
                     source: params.thisUrl.hostname + params.thisUrl.pathname,
@@ -123,8 +120,7 @@ function ageraSync(form) {
                         postal_addresses: [
                             {
                                 postal_code: formData.get("postal-code") || "",
-                                address_lines:
-                                    formData.get("street-address") || "",
+                                address_lines: formData.get("street-address") || "",
                                 region: formData.get("adress-level2") || "",
                                 country: formData.get("country") || "",
                             },
@@ -132,11 +128,8 @@ function ageraSync(form) {
                     },
                     add_tags: [formData.getAll("tags") || ""],
                     "action_network:referrer_data": {
-                        source: params.utmSource
-                            ? params.utmSource.toString()
-                            : "",
-                        website:
-                            params.thisUrl.hostname + params.thisUrl.pathname,
+                        source: params.utmSource ? params.utmSource.toString() : "",
+                        website: params.thisUrl.hostname + params.thisUrl.pathname,
                     },
                 }),
             };
@@ -240,8 +233,7 @@ function ageraSync(form) {
         form.addEventListener("submit", async function (event) {
             event.preventDefault();
             event.stopPropagation();
-            params.submitButton.value =
-                params.submitButton.dataset.wait || "Sending...";
+            params.submitButton.value = params.submitButton.dataset.wait || "Sending...";
 
             // list with all request DATA:
             let requestList = [];
