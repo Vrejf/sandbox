@@ -1,3 +1,6 @@
+const copyPopup = document.querySelector(".copy-popup");
+copyPopup.style.opacity = 0;
+
 // Activate Copy button for code blocks
 hljs.addPlugin(
     new CopyButtonPlugin({
@@ -11,9 +14,7 @@ buttons.forEach((button) => {
     button.addEventListener("click", copyJSON);
     showCopyPopup();
 });
-const copyPopup = document.querySelector(".copy-popup");
 
-copyPopup.style.opacity = 0;
 // Copy components:
 function copyJSON(event) {
     const button = event.target;
@@ -39,6 +40,7 @@ function copyJSON(event) {
 }
 
 function showCopyPopup() {
+    const copyPopup = document.querySelector(".copy-popup");
     copyPopup.style.opacity = 1;
     // timout 200 ms then hide the popup
     setTimeout(() => {
