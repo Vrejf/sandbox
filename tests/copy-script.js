@@ -33,6 +33,15 @@ function copyJSON(event) {
     );
     document.execCommand("copy");
 }
+
+function showCopyPopup() {
+    const copyPopup = document.querySelector(".copy-popup");
+    copyButtonButton.opacity = "1";
+    // timout 200 ms then hide the popup
+    setTimeout(() => {
+        copyButtonButton.opacity = "0";
+    });
+}
 const clipboardTextbox = document.querySelector(".clipboard-textbox");
 const copyButtonButton = document.querySelector(".copy-button-button");
 copyButtonButton.display = "none";
@@ -53,6 +62,7 @@ clipboardTextbox.addEventListener("paste", (event) => {
         "data-json",
         buttonTemplate1 + formattedData + buttonTemplate2
     );
+    showCopyPopup();
     console.log("Component in textbox");
 });
 
