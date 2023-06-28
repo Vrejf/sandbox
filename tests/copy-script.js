@@ -8,36 +8,6 @@ hljs.addPlugin(
     })
 );
 
-// Copy components buttons:
-// const buttons = document.querySelectorAll(".copy-component-button");
-// buttons.forEach((button) => {
-//     button.addEventListener("click", copyJSON);
-// });
-
-// Copy components:
-// function copyJSON(event) {
-//     const button = event.target;
-//     const jsonData = button.dataset.json;
-//     const formattedData = jsonData.replace(/'/g, '"');
-//     // Parse the JSON data
-//     let data = JSON.stringify(formattedData);
-
-//     document.addEventListener(
-//         "copy",
-//         (event) => {
-//             console.log("Object copied");
-//             if (event.clipboardData) {
-//                 event.clipboardData.setData("application/json", formattedData);
-//             } else if (window.clipboardData) {
-//                 window.clipboardData.setData("application/json", formattedData);
-//             }
-//             event.preventDefault();
-//         },
-//         true
-//     );
-//     document.execCommand("copy");
-//     showCopyPopup();
-// }
 const buttons = document.querySelectorAll(".copy-component-button");
 buttons.forEach((button) => {
     const formattedData = button.dataset.json.replace(/'/g, '"');
@@ -64,10 +34,7 @@ function clickHandler(data) {
     document.execCommand("copy");
     showCopyPopup();
 
-    setTimeout(() => {
-        // Code to be executed after the copy action and a delay
-        // ...
-    }, 1000); // 1000 milliseconds (1 second) delay
+    setTimeout(() => {}, 500);
 }
 
 function showCopyPopup() {
@@ -77,11 +44,12 @@ function showCopyPopup() {
 
     setTimeout(() => {
         copyPopup.style.opacity = 0;
-    }, "3000");
+    }, "2000");
 }
 
 const clipboardTextbox = document.querySelector(".clipboard-textbox");
-const copyButtonButton = document.querySelector(".copy-button-button");
+
+const copyButtonButton = document.querySelector(["data-copy='pasted'"]);
 copyButtonButton.display = "none";
 let buttonTemplate1 = `{"type":"@webflow/XscpData","payload":{"nodes":[{"_id":"161b77c0-10f8-5ac2-dc05-71c6cf50fdfa","type":"Link","tag":"a","classes":["9107e8fa-66f8-1dab-b2fe-6302ef5bd3eb"],"children":["161b77c0-10f8-5ac2-dc05-71c6cf50fdfb"],"data":{"search":{"exclude":true},"xattr":[{"name":"data-json","value":"`;
 let buttonTemplate2 = `"}],"block":"","displayName":"","devlink":{"runtimeProps":{},"slot":""},"attr":{"id":""},"visibility":{"conditions":[]},"button":true,"link":{"mode":"external","url":"#"}}},{"_id":"161b77c0-10f8-5ac2-dc05-71c6cf50fdfb","text":true,"v":"Copy component"}],"styles":[{"_id":"9107e8fa-66f8-1dab-b2fe-6302ef5bd3eb","fake":false,"type":"class","name":"copy-component-button","namespace":"","comb":"","styleLess":"","variants":{},"children":[],"createdBy":"64392523fff632c4f7f0c7bf","selector":null}],"assets":[],"ix1":[],"ix2":{"interactions":[],"events":[],"actionLists":[]}},"meta":{"unlinkedSymbolCount":0,"droppedLinks":0,"dynBindRemovedCount":0,"dynListBindRemovedCount":0,"paginationRemovedCount":0}}`;
@@ -96,11 +64,10 @@ clipboardTextbox.addEventListener("paste", (event) => {
     // Display clipboard data in the code block
     document.querySelector(".component-code-block").innerHTML = formattedData;
     copyButtonButton.display = "inline-block";
-    copyButtonButton.setAttribute(
-        "data-json",
-        buttonTemplate1 + formattedData + buttonTemplate2
-    );
-
+    copyButtonButton.addEventListener("click", function () {
+        clickHandler(buttonTemplate1 + formattedData + buttonTemplate2);
+    });
+    console.log("result: ", buttonTemplate1 + formattedData + buttonTemplate2);
     console.log("Component in textbox");
 });
 
