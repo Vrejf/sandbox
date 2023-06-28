@@ -124,24 +124,46 @@ clipboardTextbox.addEventListener("paste", (event) => {
     console.log("Component in textbox");
 });
 
-function clickDivCopy() {
-    const clickableDivs = document.querySelectorAll(".click-copy");
+// function clickDivCopy() {
+//     const clickableDivs = document.querySelectorAll(".click-copy");
 
-    clickableDivs.forEach((div) => {
-        div.addEventListener("click", function () {
-            console.log("leyts copy...");
-            const data = div.innerHTML;
-            navigator.clipboard.writeText(data).then(
-                () => {
-                    /* clipboard successfully set */
-                    showCopyPopup();
-                },
-                () => {
-                    console.log("copy fail");
-                    /* clipboard write failed */
-                }
-            );
-        });
+//     clickableDivs.forEach((div) => {
+//         div.addEventListener("click", function () {
+//             console.log("leyts copy...");
+//             const data = div.innerHTML;
+//             navigator.clipboard.writeText(data).then(
+//                 () => {
+//                     /* clipboard successfully set */
+//                     showCopyPopup();
+//                 },
+//                 () => {
+//                     console.log("copy fail");
+//                     /* clipboard write failed */
+//                 }
+//             );
+//         });
+//     });
+// }
+// clickDivCopy();
+
+function addCopyListenerToElement(el, text) {
+    el.style.cursor = "pointer";
+
+    el.addEventListener("click", function () {
+        navigator.clipboard
+            .writeText(text)
+            .then(function () {
+                console.log("Text copied to clipboard:", text);
+                showCopyPopup();
+            })
+            .catch(function (error) {
+                console.error("Failed to copy text:", error);
+            });
     });
 }
-clickDivCopy();
+
+hljs.addPlugin({
+    "after:highlightElement": function ({ el, result, text }) {
+        addCopyListenerToElement(el, text);
+    },
+});
