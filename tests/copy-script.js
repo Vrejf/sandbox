@@ -8,6 +8,9 @@
   .copy-popup {
       opacity: 0;
   }
+  .component-code-block {
+    text-wrap: wrap;
+  }
 `;
 
     const styleTag = document.createElement("style");
@@ -17,12 +20,15 @@
     copyButtonButton.style.display = "none";
 }
 
-// Activate Copy button for code blocks
-hljs.addPlugin(
-    new CopyButtonPlugin({
-        callback: (text, el) => console.log("Copied to clipboard", text),
-    })
-);
+function activateCopyButton() {
+    // Activate Copy button for code blocks
+    hljs.addPlugin(
+        new CopyButtonPlugin({
+            callback: (text, el) => console.log("Copied to clipboard", text),
+        })
+    );
+}
+activateCopyButton();
 
 const buttons = document.querySelectorAll(".copy-component-button");
 buttons.forEach((button) => {
@@ -81,6 +87,8 @@ clipboardTextbox.addEventListener("paste", (event) => {
 
     // Display clipboard data in the code block
     document.querySelector(".component-code-block").innerHTML = formattedData;
+    activateCopyButton();
+
     // if formatted data length less the 1000:
     if (formattedData.length < 10000) {
         copyButtonButton.style.display = "inline-block";
