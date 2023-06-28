@@ -19,12 +19,29 @@
     const copyButtonButton = document.querySelector('[data-copy="pasted"]');
     copyButtonButton.style.display = "none";
 }
+let formattedData = "";
 
 function activateCopyButton() {
     // Activate Copy button for code blocks
+    // hljs.addPlugin(
+    //     new CopyButtonPlugin({
+    //         callback: (text, el) => console.log("Copied to clipboard", text),
+    //         //.component-code-block
+    //     })
+    // );
     hljs.addPlugin(
         new CopyButtonPlugin({
-            callback: (text, el) => console.log("Copied to clipboard", text),
+            hook: (text, element) => {
+                if (element.classList.contains("component-code-block")) {
+                    text = formattedData;
+                    return text;
+                }
+                return text;
+            },
+            callback: (text, el) => {
+                /* logs `gretel configure --key grtf32a35bbc...` */
+                console.log(text);
+            },
         })
     );
 }
@@ -83,7 +100,7 @@ clipboardTextbox.addEventListener("paste", (event) => {
     const jsonData = clipboardData.getData("application/json");
 
     // Replace all double quotes with single quotes
-    let formattedData = jsonData.replace(/"/g, "'");
+    formattedData = jsonData.replace(/"/g, "'");
     // remove svg
     const regex = /<svg\b[^>]*>(.*?)<\/svg>/g;
     formattedData = formattedData.replace(regex, "");
