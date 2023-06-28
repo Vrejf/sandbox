@@ -11,7 +11,8 @@ buttons.forEach((button) => {
     button.addEventListener("click", copyJSON);
 });
 const copyPopup = document.querySelector(".copy-popup");
-copyPopup.opacity = "0";
+
+copyPopup.style.opacity = 0;
 // Copy components:
 function copyJSON(event) {
     const button = event.target;
@@ -37,10 +38,10 @@ function copyJSON(event) {
 }
 
 function showCopyPopup() {
-    copyPopup.opacity = "1";
+    copyPopup.style.opacity = 1;
     // timout 200 ms then hide the popup
     setTimeout(() => {
-        copyPopup.opacity = "0";
+        copyPopup.style.opacity = 0;
     });
 }
 const clipboardTextbox = document.querySelector(".clipboard-textbox");
