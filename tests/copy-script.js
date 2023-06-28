@@ -126,7 +126,8 @@ clipboardTextbox.addEventListener("paste", (event) => {
 
 function clickDivCopy() {
     const clickableDivs = document.querySelectorAll(".click-copy");
-    forEach(clickableDivs, (div) => {
+
+    clickableDivs.forEach((div) => {
         div.addEventListener("click", function () {
             console.log("leyts copy...");
             const data = div.innerHTML;
