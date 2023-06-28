@@ -156,7 +156,7 @@ function addCopyListenerToElement(el, text) {
         navigator.clipboard
             .writeText(text)
             .then(function () {
-                console.log("Text copied to clipboard:", text.slice(0, 100));
+                console.log("Text copied to clipboard:", text.slice(0, 100), "...");
                 showCopyPopup();
             })
             .catch(function (error) {
