@@ -9,6 +9,7 @@ hljs.addPlugin(
 const buttons = document.querySelectorAll(".copy-component-button");
 buttons.forEach((button) => {
     button.addEventListener("click", copyJSON);
+    showCopyPopup();
 });
 const copyPopup = document.querySelector(".copy-popup");
 
