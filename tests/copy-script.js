@@ -45,7 +45,7 @@ function activateCopyButton() {
         })
     );
 }
-activateCopyButton();
+// activateCopyButton();
 
 const buttons = document.querySelectorAll(".copy-component-button");
 buttons.forEach((button) => {
@@ -107,7 +107,7 @@ clipboardTextbox.addEventListener("paste", (event) => {
 
     // Display clipboard data in the code block
     document.querySelector(".component-code-block").innerHTML = formattedData;
-    activateCopyButton();
+    // activateCopyButton();
 
     // if formatted data length less the 1000:
     if (formattedData.length < 10000) {
@@ -124,36 +124,39 @@ clipboardTextbox.addEventListener("paste", (event) => {
     console.log("Component in textbox");
 });
 
-// function clickDivCopy() {
-//     const clickableDivs = document.querySelectorAll(".click-copy");
+function clickDivCopy() {
+    const clickableDivs = document.querySelectorAll(".click-copy");
 
-//     clickableDivs.forEach((div) => {
-//         div.addEventListener("click", function () {
-//             console.log("leyts copy...");
-//             const data = div.innerHTML;
-//             navigator.clipboard.writeText(data).then(
-//                 () => {
-//                     /* clipboard successfully set */
-//                     showCopyPopup();
-//                 },
-//                 () => {
-//                     console.log("copy fail");
-//                     /* clipboard write failed */
-//                 }
-//             );
-//         });
-//     });
-// }
-// clickDivCopy();
+    clickableDivs.forEach((div) => {
+        div.addEventListener("click", function () {
+            console.log("leyts copy...");
+            const data = div.innerHTML;
+            navigator.clipboard.writeText(data).then(
+                () => {
+                    /* clipboard successfully set */
+                    showCopyPopup();
+                },
+                () => {
+                    console.log("copy fail");
+                    /* clipboard write failed */
+                }
+            );
+        });
+    });
+}
+clickDivCopy();
 
 function addCopyListenerToElement(el, text) {
     el.style.cursor = "pointer";
 
     el.addEventListener("click", function () {
+        if (el.classList.contains("component-code-block")) {
+            text = formattedData;
+        }
         navigator.clipboard
             .writeText(text)
             .then(function () {
-                console.log("Text copied to clipboard:", text);
+                console.log("Text copied to clipboard:", text.slice(0, 100));
                 showCopyPopup();
             })
             .catch(function (error) {
