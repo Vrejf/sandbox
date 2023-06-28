@@ -9,27 +9,50 @@ hljs.addPlugin(
 );
 
 // Copy components buttons:
-const buttons = document.querySelectorAll(".copy-component-button");
-buttons.forEach((button) => {
-    button.addEventListener("click", copyJSON);
-});
+// const buttons = document.querySelectorAll(".copy-component-button");
+// buttons.forEach((button) => {
+//     button.addEventListener("click", copyJSON);
+// });
 
 // Copy components:
-function copyJSON(event) {
-    const button = event.target;
-    const jsonData = button.dataset.json;
-    const formattedData = jsonData.replace(/'/g, '"');
-    // Parse the JSON data
-    let data = JSON.stringify(formattedData);
+// function copyJSON(event) {
+//     const button = event.target;
+//     const jsonData = button.dataset.json;
+//     const formattedData = jsonData.replace(/'/g, '"');
+//     // Parse the JSON data
+//     let data = JSON.stringify(formattedData);
 
+//     document.addEventListener(
+//         "copy",
+//         (event) => {
+//             console.log("Object copied");
+//             if (event.clipboardData) {
+//                 event.clipboardData.setData("application/json", formattedData);
+//             } else if (window.clipboardData) {
+//                 window.clipboardData.setData("application/json", formattedData);
+//             }
+//             event.preventDefault();
+//         },
+//         true
+//     );
+//     document.execCommand("copy");
+//     showCopyPopup();
+// }
+const buttons = document.querySelectorAll(".copy-component-button");
+buttons.forEach((button) => {
+    const formattedData = button.dataset.json.replace(/'/g, '"');
+    button.addEventListener("click", clickHandler(formattedData));
+});
+
+function clickHandler(data) {
     document.addEventListener(
         "copy",
         (event) => {
             console.log("Object copied");
             if (event.clipboardData) {
-                event.clipboardData.setData("application/json", formattedData);
+                event.clipboardData.setData("application/json", data);
             } else if (window.clipboardData) {
-                window.clipboardData.setData("application/json", formattedData);
+                window.clipboardData.setData("application/json", data);
             }
             event.preventDefault();
         },
@@ -48,6 +71,7 @@ function showCopyPopup() {
         copyPopup.style.opacity = 0;
     }, "3000");
 }
+
 const clipboardTextbox = document.querySelector(".clipboard-textbox");
 const copyButtonButton = document.querySelector(".copy-button-button");
 copyButtonButton.display = "none";
