@@ -128,6 +128,7 @@ function clickDivCopy() {
     const clickableDivs = document.querySelectorAll(".click-copy");
     forEach(clickableDivs, (div) => {
         div.addEventListener("click", function () {
+            console.log("leyts copy...");
             const data = div.innerHTML;
             navigator.clipboard.writeText(data).then(
                 () => {
@@ -135,6 +136,7 @@ function clickDivCopy() {
                     showCopyPopup();
                 },
                 () => {
+                    console.log("copy fail");
                     /* clipboard write failed */
                 }
             );
