@@ -61,9 +61,12 @@ function clickHandler(data) {
         },
         true
     );
+    document.execCommand("copy");
+    showCopyPopup();
+
     setTimeout(() => {
-        document.execCommand("copy");
-        showCopyPopup();
+        // Code to be executed after the copy action and a delay
+        // ...
     }, 1000); // 1000 milliseconds (1 second) delay
 }
 
