@@ -83,7 +83,7 @@ clipboardTextbox.addEventListener("paste", (event) => {
     const jsonData = clipboardData.getData("application/json");
 
     // Replace all double quotes with single quotes
-    const formattedData = jsonData.replace(/"/g, "'");
+    let formattedData = jsonData.replace(/"/g, "'");
     // remove svg
     const regex = /<svg\b[^>]*>(.*?)<\/svg>/g;
     formattedData = formattedData.replace(regex, "");
