@@ -1,5 +1,21 @@
-const copyPopup = document.querySelector(".copy-popup");
-copyPopup.style.opacity = 0;
+{
+    // Run before DOM load:
+    const hideCss = `
+  .too-big {
+      display: none;
+      transition: opacity 0.7s;
+  }
+  .copy-popup {
+      opacity: 0;
+  }
+`;
+
+    const styleTag = document.createElement("style");
+    styleTag.textContent = hideCss;
+    document.head.appendChild(styleTag);
+    const copyButtonButton = document.querySelector('[data-copy="pasted"]');
+    copyButtonButton.style.display = "none";
+}
 
 // Activate Copy button for code blocks
 hljs.addPlugin(
