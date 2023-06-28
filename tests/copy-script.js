@@ -10,6 +10,8 @@ const buttons = document.querySelectorAll(".copy-component-button");
 buttons.forEach((button) => {
     button.addEventListener("click", copyJSON);
 });
+const copyPopup = document.querySelector(".copy-popup");
+copyPopup.opacity = "0";
 // Copy components:
 function copyJSON(event) {
     const button = event.target;
@@ -35,11 +37,10 @@ function copyJSON(event) {
 }
 
 function showCopyPopup() {
-    const copyPopup = document.querySelector(".copy-popup");
-    copyButtonButton.opacity = "1";
+    copyPopup.opacity = "1";
     // timout 200 ms then hide the popup
     setTimeout(() => {
-        copyButtonButton.opacity = "0";
+        copyPopup.opacity = "0";
     });
 }
 const clipboardTextbox = document.querySelector(".clipboard-textbox");
@@ -62,7 +63,7 @@ clipboardTextbox.addEventListener("paste", (event) => {
         "data-json",
         buttonTemplate1 + formattedData + buttonTemplate2
     );
-    showCopyPopup();
+
     console.log("Component in textbox");
 });
 
