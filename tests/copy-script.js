@@ -123,3 +123,21 @@ clipboardTextbox.addEventListener("paste", (event) => {
     console.log("result: ", buttonTemplate1 + formattedData + buttonTemplate2);
     console.log("Component in textbox");
 });
+
+function clickDivCopy() {
+    const clickableDivs = document.querySelectorAll(".click-copy");
+    forEach(clickableDivs, (div) => {
+        div.addEventListener("click", function () {
+            const data = div.innerHTML;
+            navigator.clipboard.writeText(data).then(
+                () => {
+                    /* clipboard successfully set */
+                    showCopyPopup();
+                },
+                () => {
+                    /* clipboard write failed */
+                }
+            );
+        });
+    });
+}
