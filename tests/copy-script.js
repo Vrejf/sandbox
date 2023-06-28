@@ -12,7 +12,6 @@ hljs.addPlugin(
 const buttons = document.querySelectorAll(".copy-component-button");
 buttons.forEach((button) => {
     button.addEventListener("click", copyJSON);
-    showCopyPopup();
 });
 
 // Copy components:
@@ -37,15 +36,17 @@ function copyJSON(event) {
         true
     );
     document.execCommand("copy");
+    showCopyPopup();
 }
 
 function showCopyPopup() {
     const copyPopup = document.querySelector(".copy-popup");
     copyPopup.style.opacity = 1;
     // timout 200 ms then hide the popup
+
     setTimeout(() => {
         copyPopup.style.opacity = 0;
-    });
+    }, "3000");
 }
 const clipboardTextbox = document.querySelector(".clipboard-textbox");
 const copyButtonButton = document.querySelector(".copy-button-button");
