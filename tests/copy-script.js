@@ -143,3 +143,4 @@ function clickDivCopy() {
         });
     });
 }
+clickDivCopy();
