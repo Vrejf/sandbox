@@ -45,6 +45,7 @@ buttons.forEach((button) => {
 });
 
 function clickHandler(data) {
+    console.log("CLicked");
     document.addEventListener(
         "copy",
         (event) => {
