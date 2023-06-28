@@ -5,7 +5,7 @@ hljs.addPlugin(
   })
 );
 
-// Copy cmponents buttons:
+// Copy components buttons:
 const buttons = document.querySelectorAll(".copy-component-button");
 buttons.forEach((button) => {
   button.addEventListener("click", copyJSON);
@@ -45,5 +45,5 @@ clipboardTextbox.addEventListener("paste", (event) => {
 
   // Display clipboard data in the code block
   document.querySelector(".component-code-block").innerHTML = formattedData;
+  console.log("Component in textbox")
 });
-// Hello

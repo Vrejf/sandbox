@@ -1,4 +1,4 @@
-// Counter 0.1.6 230626 - 13.30
+// Counter 0.1.6 230628 - 14.00
 // data attributes: data-counter-name,
 // data-counter-target=0, data-counter-hide-below=0, data-counter-auto-target=true, data-counter-locale="none"/"sv-SE", data-counter-compact="compact"
 // css: .counter-target-value, .counter-current-value, .counter_container
@@ -44,7 +44,6 @@ function ageraCounter() {
     }
 
     async function fetchCounter(name) {
-        console.log("fetching...");
         const url = new URL(name, apiUrl);
 
         try {
