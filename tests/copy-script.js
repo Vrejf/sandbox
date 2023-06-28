@@ -41,7 +41,9 @@ hljs.addPlugin(
 const buttons = document.querySelectorAll(".copy-component-button");
 buttons.forEach((button) => {
     const formattedData = button.dataset.json.replace(/'/g, '"');
-    button.addEventListener("click", clickHandler(formattedData));
+    button.addEventListener("click", function () {
+        clickHandler(formattedData);
+    });
 });
 
 function clickHandler(data) {
@@ -49,12 +51,12 @@ function clickHandler(data) {
     document.addEventListener(
         "copy",
         (event) => {
-            console.log("Object copied");
             if (event.clipboardData) {
                 event.clipboardData.setData("application/json", data);
             } else if (window.clipboardData) {
                 window.clipboardData.setData("application/json", data);
             }
+            console.log("Object copied");
             event.preventDefault();
         },
         true
