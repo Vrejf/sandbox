@@ -51,10 +51,12 @@ const clipboardTextbox = document.querySelector(".clipboard-textbox");
 
 const copyButtonButton = document.querySelector('[data-copy="pasted"]');
 copyButtonButton.style.display = "none";
+const tooBigText = document.querySelector(".too-big");
 let buttonTemplate1 = `{"type":"@webflow/XscpData","payload":{"nodes":[{"_id":"161b77c0-10f8-5ac2-dc05-71c6cf50fdfa","type":"Link","tag":"a","classes":["9107e8fa-66f8-1dab-b2fe-6302ef5bd3eb"],"children":["161b77c0-10f8-5ac2-dc05-71c6cf50fdfb"],"data":{"search":{"exclude":true},"xattr":[{"name":"data-json","value":"`;
 let buttonTemplate2 = `"}],"block":"","displayName":"","devlink":{"runtimeProps":{},"slot":""},"attr":{"id":""},"visibility":{"conditions":[]},"button":true,"link":{"mode":"external","url":"#"}}},{"_id":"161b77c0-10f8-5ac2-dc05-71c6cf50fdfb","text":true,"v":"Copy component"}],"styles":[{"_id":"9107e8fa-66f8-1dab-b2fe-6302ef5bd3eb","fake":false,"type":"class","name":"copy-component-button","namespace":"","comb":"","styleLess":"","variants":{},"children":[],"createdBy":"64392523fff632c4f7f0c7bf","selector":null}],"assets":[],"ix1":[],"ix2":{"interactions":[],"events":[],"actionLists":[]}},"meta":{"unlinkedSymbolCount":0,"droppedLinks":0,"dynBindRemovedCount":0,"dynListBindRemovedCount":0,"paginationRemovedCount":0}}`;
 // Get component from clipboard
 clipboardTextbox.addEventListener("paste", (event) => {
+    tooBigText.style.display = "none";
     const clipboardData = event.clipboardData;
     const jsonData = clipboardData.getData("application/json");
 
@@ -62,11 +64,18 @@ clipboardTextbox.addEventListener("paste", (event) => {
     const formattedData = jsonData.replace(/"/g, "'");
 
     // Display clipboard data in the code block
-    document.querySelector(".component-code-block").innerHTML = "Pasted!"; //formattedData;
-    copyButtonButton.style.display = "inline-block";
-    copyButtonButton.addEventListener("click", function () {
-        clickHandler(buttonTemplate1 + formattedData + buttonTemplate2);
-    });
+    document.querySelector(".component-code-block").innerHTML = formattedData;
+    // if formatted data length less the 1000:
+    if (formattedData.length < 10000) {
+        copyButtonButton.style.display = "inline-block";
+        copyButtonButton.addEventListener("click", function () {
+            clickHandler(buttonTemplate1 + formattedData + buttonTemplate2);
+        });
+    } else {
+        copyButtonButton.style.display = "none";
+        tooBigText.style.display = "inline-block";
+    }
+
     console.log("result: ", buttonTemplate1 + formattedData + buttonTemplate2);
     console.log("Component in textbox");
 });
