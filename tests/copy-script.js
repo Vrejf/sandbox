@@ -62,7 +62,7 @@ clipboardTextbox.addEventListener("paste", (event) => {
     const formattedData = jsonData.replace(/"/g, "'");
 
     // Display clipboard data in the code block
-    document.querySelector(".component-code-block").innerHTML = formattedData;
+    document.querySelector(".component-code-block").innerHTML = "Pasted!"; //formattedData;
     copyButtonButton.style.display = "inline-block";
     copyButtonButton.addEventListener("click", function () {
         clickHandler(buttonTemplate1 + formattedData + buttonTemplate2);
@@ -70,7 +70,3 @@ clipboardTextbox.addEventListener("paste", (event) => {
     console.log("result: ", buttonTemplate1 + formattedData + buttonTemplate2);
     console.log("Component in textbox");
 });
-
-//{"type":"@webflow/XscpData","payload":{"nodes":[{"_id":"161b77c0-10f8-5ac2-dc05-71c6cf50fdfa","type":"Link","tag":"a","classes":["9107e8fa-66f8-1dab-b2fe-6302ef5bd3eb"],"children":["161b77c0-10f8-5ac2-dc05-71c6cf50fdfb"],"data":{"search":{"exclude":true},"xattr":[{"name":"data-json","value":"
-//{'type':'@webflow/XscpData','payload':{'nodes':[{'_id':'7acbaf0d-55aa-cd00-845b-0387236286fa','type':'Heading','tag':'h1','classes':['0e60b558-fba8-4fc9-ef22-471bbe1b0c29'],'children':['7acbaf0d-55aa-cd00-845b-0387236286fb'],'data':{'search':{'exclude':false},'xattr':[],'displayName':'','devlink':{'runtimeProps':{},'slot':''},'attr':{'id':''},'visibility':{'conditions':[]},'tag':'h1'}},{'_id':'7acbaf0d-55aa-cd00-845b-0387236286fb','text':true,'v':'HTML'}],'styles':[{'_id':'0e60b558-fba8-4fc9-ef22-471bbe1b0c29','fake':false,'type':'class','name':'Heading-small','namespace':'','comb':'','styleLess':'font-family: Montserrat; font-size: 20px; font-weight: 600;','variants':{},'children':[],'createdBy':'64392523fff632c4f7f0c7bf','selector':null}],'assets':[],'ix1':[],'ix2':{'interactions':[],'events':[],'actionLists':[]}},'meta':{'unlinkedSymbolCount':0,'droppedLinks':0,'dynBindRemovedCount':0,'dynListBindRemovedCount':0,'paginationRemovedCount':0}}
-//"}],"block":"","displayName":"","devlink":{"runtimeProps":{},"slot":""},"attr":{"id":""},"visibility":{"conditions":[]},"button":true,"link":{"mode":"external","url":"#"}}},{"_id":"161b77c0-10f8-5ac2-dc05-71c6cf50fdfb","text":true,"v":"Copy component"}],"styles":[{"_id":"9107e8fa-66f8-1dab-b2fe-6302ef5bd3eb","fake":false,"type":"class","name":"copy-component-button","namespace":"","comb":"","styleLess":"","variants":{},"children":[],"createdBy":"64392523fff632c4f7f0c7bf","selector":null}],"assets":[],"ix1":[],"ix2":{"interactions":[],"events":[],"actionLists":[]}},"meta":{"unlinkedSymbolCount":0,"droppedLinks":0,"dynBindRemovedCount":0,"dynListBindRemovedCount":0,"paginationRemovedCount":0}}
