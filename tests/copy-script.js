@@ -74,8 +74,13 @@ async function clickHandler(component) {
     // showCopyPopup();
     try {
         const jsonString = JSON.stringify(component, null, 2);
-        await navigator.clipboard.writeText(jsonString);
-        // Trigger notification
+        const dataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(
+            jsonString
+        )}`;
+        const blob = new Blob([dataUrl], { type: "application/json" });
+
+        await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
+
         showCopyPopup();
     } catch (error) {
         console.error("Failed to copy object:", error);
