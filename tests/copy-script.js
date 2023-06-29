@@ -40,9 +40,10 @@ function activateCopyButton() {
 }
 // activateCopyButton();
 
-const buttons = document.querySelectorAll(".copy-component-button");
-buttons.forEach((button) => {
-    const formattedData = button.dataset.json.replace(/'/g, '"');
+// const buttons = document.querySelectorAll(".copy-component-button");
+const copyComponentButtons = document.querySelector('[data-copy="json"]');
+copyComponentButtons.forEach((button) => {
+    const formattedData = button.dataset.json.replace(/'/g, '"'); // replace single quotes with double quotes
     button.addEventListener("click", function () {
         clickHandler(formattedData);
     });
