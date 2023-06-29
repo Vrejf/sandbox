@@ -1,16 +1,16 @@
 {
     // Run before DOM load:
     const hideCss = `
-  .too-big {
-      display: none;
-      transition: opacity 0.7s;
-  }
-  .copy-popup {
-      opacity: 0;
-  }
-  .component-code-block {
-    text-wrap: wrap;
-  }
+    .too-big {
+        display: none;
+        transition: opacity 0.7s;
+    }
+    .copy-popup {
+        opacity: 0;
+    }
+    .component-code-block {
+        text-wrap: wrap;
+    }
 `;
 
     const styleTag = document.createElement("style");
@@ -22,13 +22,7 @@
 let formattedData = "";
 
 function activateCopyButton() {
-    // Activate Copy button for code blocks
-    // hljs.addPlugin(
-    //     new CopyButtonPlugin({
-    //         callback: (text, el) => console.log("Copied to clipboard", text),
-    //         //.component-code-block
-    //     })
-    // );
+
     hljs.addPlugin(
         new CopyButtonPlugin({
             hook: (text, element) => {
@@ -56,35 +50,23 @@ buttons.forEach((button) => {
 });
 
 async function clickHandler(component) {
-    console.log("CLicked");
-    // document.addEventListener(
-    //     "copy",
-    //     (event) => {
-    //         if (event.clipboardData) {
-    //             event.clipboardData.setData("application/json", data);
-    //         } else if (window.clipboardData) {
-    //             window.clipboardData.setData("application/json", data);
-    //         }
-    //         console.log("Object copied");
-    //         event.preventDefault();
-    //     },
-    //     true
-    // );
-    // document.execCommand("copy");
-    // showCopyPopup();
-    try {
-        const jsonString = JSON.stringify(component, null, 2);
-        const dataUrl = `data:application/json;charset=utf-8,${encodeURIComponent(
-            jsonString
-        )}`;
-        const blob = new Blob([dataUrl], { type: "application/json" });
+    console.log("Clicked");
+    document.addEventListener(
+        "copy",
+        (event) => {
+            if (event.clipboardData) {
+                event.clipboardData.setData("application/json", data);
+            } else if (window.clipboardData) {
+                window.clipboardData.setData("application/json", data);
+            }
+            console.log("Object copied");
+            event.preventDefault();
+        },
+        true
+    );
+    document.execCommand("copy");
+    showCopyPopup();
 
-        await navigator.clipboard.write([new ClipboardItem({ [blob.type]: blob })]);
-
-        showCopyPopup();
-    } catch (error) {
-        console.error("Failed to copy object:", error);
-    }
     setTimeout(() => {}, 500);
 }
 
@@ -119,7 +101,6 @@ clipboardTextbox.addEventListener("paste", (event) => {
 
     // Display clipboard data in the code block
     document.querySelector(".component-code-block").innerHTML = formattedData;
-    // activateCopyButton();
 
     // if formatted data length less the 1000:
     if (formattedData.length < 10000) {
