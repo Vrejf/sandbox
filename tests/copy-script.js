@@ -55,24 +55,35 @@ buttons.forEach((button) => {
     });
 });
 
-function clickHandler(data) {
+async function clickHandler(component) {
     console.log("CLicked");
-    document.addEventListener(
-        "copy",
-        (event) => {
-            if (event.clipboardData) {
-                event.clipboardData.setData("application/json", data);
-            } else if (window.clipboardData) {
-                window.clipboardData.setData("application/json", data);
-            }
-            console.log("Object copied");
-            event.preventDefault();
-        },
-        true
-    );
-    document.execCommand("copy");
-    showCopyPopup();
+    // document.addEventListener(
+    //     "copy",
+    //     (event) => {
+    //         if (event.clipboardData) {
+    //             event.clipboardData.setData("application/json", data);
+    //         } else if (window.clipboardData) {
+    //             window.clipboardData.setData("application/json", data);
+    //         }
+    //         console.log("Object copied");
+    //         event.preventDefault();
+    //     },
+    //     true
+    // );
+    // document.execCommand("copy");
+    // showCopyPopup();
+    try {
+        // Copy starter form JSON to clipboard
+        const data = new Blob([JSON.stringify(component, null, 2)], {
+            type: "application/json",
+        });
+        await navigator.clipboard.write([new ClipboardItem({ [data.type]: data })]);
 
+        // Trigger notification
+        showCopyPopup();
+    } catch (error) {
+        console.error("Failed to copy object:", error);
+    }
     setTimeout(() => {}, 500);
 }
 
