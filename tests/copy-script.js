@@ -60,13 +60,13 @@ async function clickHandler(component) {
             }
             console.log("Object copied");
             event.preventDefault();
+            setTimeout(() => {}, 100);
         },
         true
     );
     document.execCommand("copy");
+    console.log("show popup");
     showCopyPopup();
-
-    setTimeout(() => {}, 500);
 }
 
 function showCopyPopup() {
