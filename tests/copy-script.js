@@ -48,7 +48,7 @@ buttons.forEach((button) => {
     });
 });
 
-async function clickHandler(component) {
+function clickHandler(component) {
     console.log("Clicked");
     document.addEventListener(
         "copy",
@@ -60,12 +60,13 @@ async function clickHandler(component) {
             }
             console.log("Object copied");
             event.preventDefault();
-            setTimeout(() => {}, 100);
         },
         true
     );
     document.execCommand("copy");
-    console.log("show popup");
+    document.removeEventListener("copy");
+
+    setTimeout(() => {}, 500);
     showCopyPopup();
 }
 
