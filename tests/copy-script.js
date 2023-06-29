@@ -55,7 +55,7 @@ buttons.forEach((button) => {
     });
 });
 
-function clickHandler(component) {
+async function clickHandler(component) {
     console.log("CLicked");
     // document.addEventListener(
     //     "copy",
@@ -73,7 +73,8 @@ function clickHandler(component) {
     // document.execCommand("copy");
     // showCopyPopup();
     try {
-        navigator.clipboard.writeText(JSON.stringify(component));
+        const jsonString = JSON.stringify(component, null, 2);
+        await navigator.clipboard.writeText(jsonString);
         // Trigger notification
         showCopyPopup();
     } catch (error) {
