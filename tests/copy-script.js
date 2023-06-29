@@ -55,7 +55,7 @@ buttons.forEach((button) => {
     });
 });
 
-async function clickHandler(component) {
+function clickHandler(component) {
     console.log("CLicked");
     // document.addEventListener(
     //     "copy",
@@ -73,12 +73,7 @@ async function clickHandler(component) {
     // document.execCommand("copy");
     // showCopyPopup();
     try {
-        // Copy starter form JSON to clipboard
-        const data = new Blob([JSON.stringify(component, null, 2)], {
-            type: "application/json",
-        });
-        await navigator.clipboard.write([new ClipboardItem({ [data.type]: data })]);
-
+        navigator.clipboard.writeText(JSON.stringify(component));
         // Trigger notification
         showCopyPopup();
     } catch (error) {
