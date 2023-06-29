@@ -48,28 +48,50 @@ buttons.forEach((button) => {
     });
 });
 
+// function clickHandler(component) {
+//     console.log("Clicked");
+//     document.addEventListener(
+//         "copy",
+//         (event) => {
+//             if (event.clipboardData) {
+//                 event.clipboardData.setData("application/json", component);
+//             } else if (window.clipboardData) {
+//                 window.clipboardData.setData("application/json", component);
+//             }
+//             console.log("Object copied");
+//             event.preventDefault();
+//         },
+//         true
+//     );
+//     document.execCommand("copy");
+//     document.removeEventListener("copy");
+
+//     setTimeout(() => {}, 500);
+//     showCopyPopup();
+// }
 function clickHandler(component) {
     console.log("Clicked");
-    document.addEventListener(
-        "copy",
-        (event) => {
-            if (event.clipboardData) {
-                event.clipboardData.setData("application/json", component);
-            } else if (window.clipboardData) {
-                window.clipboardData.setData("application/json", component);
-            }
-            console.log("Object copied");
-            event.preventDefault();
-        },
-        true
-    );
+
+    function handleCopy(event) {
+        if (event.clipboardData) {
+            event.clipboardData.setData("application/json", component);
+        } else if (window.clipboardData) {
+            window.clipboardData.setData("application/json", component);
+        }
+
+        console.log("Object copied");
+        event.preventDefault();
+
+        // Remove the event listener after the copy operation is complete
+        document.removeEventListener("copy", handleCopy, true);
+    }
+
+    document.addEventListener("copy", handleCopy, true);
     document.execCommand("copy");
-    document.removeEventListener("copy");
-
-    setTimeout(() => {}, 500);
     showCopyPopup();
-}
 
+    setTimeout(() => {}, 100);
+}
 function showCopyPopup() {
     const copyPopup = document.querySelector(".copy-popup");
     copyPopup.style.opacity = 1;
