@@ -22,7 +22,6 @@
 let formattedData = "";
 
 function activateCopyButton() {
-
     hljs.addPlugin(
         new CopyButtonPlugin({
             hook: (text, element) => {
@@ -55,9 +54,9 @@ async function clickHandler(component) {
         "copy",
         (event) => {
             if (event.clipboardData) {
-                event.clipboardData.setData("application/json", data);
+                event.clipboardData.setData("application/json", component);
             } else if (window.clipboardData) {
-                window.clipboardData.setData("application/json", data);
+                window.clipboardData.setData("application/json", component);
             }
             console.log("Object copied");
             event.preventDefault();
